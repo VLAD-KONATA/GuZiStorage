@@ -1,0 +1,352 @@
+package com.guzi.storage.ui.add
+
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.guzi.storage.data.repository.ItemRepository
+import com.guzi.storage.data.repository.PresetOptionRepository
+import com.guzi.storage.domain.model.Item
+import com.guzi.storage.util.ImageFileManager
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import java.util.UUID
+import javax.inject.Inject
+
+/**
+ * 添加/编辑物品表单的 ViewModel
+ *
+ * 管理表单所有字段的状态、校验逻辑和提交操作
+ */
+@HiltViewModel
+class AddItemViewModel @Inject constructor(
+    private val itemRepository: ItemRepository,
+    private val presetOptionRepository: PresetOptionRepository,
+    private val imageFileManager: ImageFileManager
+) : ViewModel() {
+
+    // ===== 表单状态 =====
+    private val _formState = MutableStateFlow(ItemFormState())
+    val formState: StateFlow<ItemFormState> = _formState.asStateFlow()
+
+    // ===== 预设选项 =====
+    private val _ipOptions = MutableStateFlow<List<String>>(emptyList())
+    val ipOptions: StateFlow<List<String>> = _ipOptions.asStateFlow()
+
+    private val _producerOptions = MutableStateFlow<List<String>>(emptyList())
+    val producerOptions: StateFlow<List<String>> = _producerOptions.asStateFlow()
+
+    private val _originPlaceOptions = MutableStateFlow<List<String>>(emptyList())
+    val originPlaceOptions: StateFlow<List<String>> = _originPlaceOptions.asStateFlow()
+
+    private val _saleFormatOptions = MutableStateFlow<List<String>>(emptyList())
+    val saleFormatOptions: StateFlow<List<String>> = _saleFormatOptions.asStateFlow()
+
+    private val _sellMethodOptions = MutableStateFlow<List<String>>(emptyList())
+    val sellMethodOptions: StateFlow<List<String>> = _sellMethodOptions.asStateFlow()
+
+    private val _categoryOptions = MutableStateFlow<List<String>>(emptyList())
+    val categoryOptions: StateFlow<List<String>> = _categoryOptions.asStateFlow()
+
+    private val _sizeOptions = MutableStateFlow<List<String>>(emptyList())
+    val sizeOptions: StateFlow<List<String>> = _sizeOptions.asStateFlow()
+
+    private val _materialOptions = MutableStateFlow<List<String>>(emptyList())
+    val materialOptions: StateFlow<List<String>> = _materialOptions.asStateFlow()
+
+    private val _characterOptions = MutableStateFlow<List<String>>(emptyList())
+    val characterOptions: StateFlow<List<String>> = _characterOptions.asStateFlow()
+
+    private val _artTypeOptions = MutableStateFlow<List<String>>(emptyList())
+    val artTypeOptions: StateFlow<List<String>> = _artTypeOptions.asStateFlow()
+
+    private val _statusOptions = MutableStateFlow<List<String>>(emptyList())
+    val statusOptions: StateFlow<List<String>> = _statusOptions.asStateFlow()
+
+    private val _versionOptions = MutableStateFlow<List<String>>(emptyList())
+    val versionOptions: StateFlow<List<String>> = _versionOptions.asStateFlow()
+
+    // ===== 保存状态 =====
+    private val _saveResult = MutableStateFlow<SaveResult?>(null)
+    val saveResult: StateFlow<SaveResult?> = _saveResult.asStateFlow()
+
+    // ===== 初始化 =====
+
+    init {
+        loadPresetOptions()
+    }
+
+    private fun loadPresetOptions() {
+        viewModelScope.launch {
+            _ipOptions.value = presetOptionRepository.getOptionValues("ip_name")
+            _producerOptions.value = presetOptionRepository.getOptionValues("producer")
+            _originPlaceOptions.value = presetOptionRepository.getOptionValues("origin_places")
+            _saleFormatOptions.value = presetOptionRepository.getOptionValues("sale_format")
+            _sellMethodOptions.value = presetOptionRepository.getOptionValues("sell_method")
+            _categoryOptions.value = presetOptionRepository.getOptionValues("category")
+            _sizeOptions.value = presetOptionRepository.getOptionValues("sizes")
+            _materialOptions.value = presetOptionRepository.getOptionValues("materials")
+            _characterOptions.value = presetOptionRepository.getOptionValues("characters")
+            _artTypeOptions.value = presetOptionRepository.getOptionValues("art_types")
+            _statusOptions.value = presetOptionRepository.getOptionValues("status")
+            _versionOptions.value = presetOptionRepository.getOptionValues("version")
+        }
+    }
+
+    /**
+     * 加载已有物品数据（编辑模式）
+     */
+    fun loadItem(itemId: String) {
+        viewModelScope.launch {
+            val item = itemRepository.getItemById(itemId) ?: return@launch
+            _formState.value = ItemFormState(
+                itemId = item.id,
+                nameCn = item.nameCn,
+                nameEn = item.nameEn ?: "",
+                ipName = item.ipName,
+                producer = item.producer ?: "",
+                originPlaces = item.originPlaces,
+                saleFormat = item.saleFormat,
+                sellMethod = item.sellMethod,
+                price = item.price?.toString() ?: "",
+                category = item.category ?: "",
+                sizes = item.sizes,
+                materials = item.materials,
+                characters = item.characters,
+                artTypes = item.artTypes,
+                status = item.status,
+                damageDetails = item.damageDetails,
+                version = item.version ?: "",
+                quantity = item.quantity.toString(),
+                note = item.note ?: "",
+                imagePaths = item.imagePaths,
+                isEditMode = true
+            )
+        }
+    }
+
+    // ===== 表单更新方法 =====
+
+    fun updateNameCn(value: String) {
+        _formState.value = _formState.value.copy(nameCn = value)
+    }
+
+    fun updateNameEn(value: String) {
+        _formState.value = _formState.value.copy(nameEn = value)
+    }
+
+    fun updateIpName(value: String) {
+        _formState.value = _formState.value.copy(ipName = value)
+    }
+
+    fun updateProducer(value: String) {
+        _formState.value = _formState.value.copy(producer = value)
+    }
+
+    fun updateOriginPlaces(value: List<String>) {
+        _formState.value = _formState.value.copy(originPlaces = value)
+    }
+
+    fun updateSaleFormat(value: List<String>) {
+        _formState.value = _formState.value.copy(saleFormat = value)
+    }
+
+    fun updateSellMethod(value: String) {
+        _formState.value = _formState.value.copy(sellMethod = value)
+    }
+
+    fun updatePrice(value: String) {
+        _formState.value = _formState.value.copy(price = value)
+    }
+
+    fun updateCategory(value: String) {
+        _formState.value = _formState.value.copy(category = value)
+    }
+
+    fun updateSizes(value: List<String>) {
+        _formState.value = _formState.value.copy(sizes = value)
+    }
+
+    fun updateMaterials(value: List<String>) {
+        _formState.value = _formState.value.copy(materials = value)
+    }
+
+    fun updateCharacters(value: List<String>) {
+        _formState.value = _formState.value.copy(characters = value)
+    }
+
+    fun updateArtTypes(value: List<String>) {
+        _formState.value = _formState.value.copy(artTypes = value)
+    }
+
+    fun updateStatus(value: String) {
+        _formState.value = _formState.value.copy(status = value)
+    }
+
+    fun updateDamageDetails(value: List<String>) {
+        _formState.value = _formState.value.copy(damageDetails = value)
+    }
+
+    fun updateVersion(value: String) {
+        _formState.value = _formState.value.copy(version = value)
+    }
+
+    fun updateQuantity(value: String) {
+        _formState.value = _formState.value.copy(quantity = value)
+    }
+
+    fun updateNote(value: String) {
+        _formState.value = _formState.value.copy(note = value)
+    }
+
+    /**
+     * 添加图片
+     */
+    fun addImage(uri: Uri) {
+        val itemId = _formState.value.itemId
+        val path = imageFileManager.copyImageToItemDir(itemId, uri)
+        if (path != null) {
+            _formState.value = _formState.value.copy(
+                imagePaths = _formState.value.imagePaths + path
+            )
+        }
+    }
+
+    /**
+     * 移除图片
+     */
+    fun removeImage(path: String) {
+        imageFileManager.deleteImage(path)
+        _formState.value = _formState.value.copy(
+            imagePaths = _formState.value.imagePaths - path
+        )
+    }
+
+    /**
+     * 添加新预设选项（自动添加功能）
+     */
+    fun addNewPresetOption(attributeName: String, value: String) {
+        viewModelScope.launch {
+            presetOptionRepository.addOption(attributeName, value)
+            loadPresetOptions() // 重新加载
+        }
+    }
+
+    // ===== 校验 =====
+
+    fun validate(): Boolean {
+        val state = _formState.value
+        val errors = mutableMapOf<String, String>()
+
+        if (state.nameCn.isBlank()) errors["nameCn"] = "中文名称不能为空"
+        if (state.ipName.isBlank()) errors["ipName"] = "IP名不能为空"
+        if (state.saleFormat.isEmpty()) errors["saleFormat"] = "发售形式不能为空"
+        if (state.sellMethod.isBlank()) errors["sellMethod"] = "售卖方式不能为空"
+        if (state.characters.isEmpty()) errors["characters"] = "相关角色不能为空"
+        if (state.artTypes.isEmpty()) errors["artTypes"] = "柄图种类不能为空"
+
+        // 价格校验
+        if (state.price.isNotBlank()) {
+            state.price.toDoubleOrNull() ?: run {
+                errors["price"] = "价格必须为数字"
+            }
+        }
+
+        // 数量校验
+        state.quantity.toIntOrNull()?.let { qty ->
+            if (qty < 1) errors["quantity"] = "数量至少为1"
+        } ?: run {
+            errors["quantity"] = "数量必须为整数"
+        }
+
+        _formState.value = state.copy(validationErrors = errors)
+        return errors.isEmpty()
+    }
+
+    // ===== 保存 =====
+
+    fun save() {
+        if (!validate()) return
+
+        viewModelScope.launch {
+            try {
+                val state = _formState.value
+                val item = Item(
+                    id = state.itemId,
+                    nameCn = state.nameCn,
+                    nameEn = state.nameEn.ifBlank { null },
+                    ipName = state.ipName,
+                    producer = state.producer.ifBlank { null },
+                    sellMethod = state.sellMethod,
+                    price = state.price.toDoubleOrNull(),
+                    category = state.category.ifBlank { null },
+                    version = state.version.ifBlank { null },
+                    status = state.status,
+                    quantity = state.quantity.toIntOrNull() ?: 1,
+                    note = state.note.ifBlank { null },
+                    originPlaces = state.originPlaces,
+                    saleFormat = state.saleFormat,
+                    sizes = state.sizes,
+                    materials = state.materials,
+                    characters = state.characters,
+                    artTypes = state.artTypes,
+                    damageDetails = state.damageDetails,
+                    imagePaths = state.imagePaths
+                )
+
+                if (state.isEditMode) {
+                    itemRepository.updateItem(item)
+                } else {
+                    itemRepository.addItem(item)
+                }
+
+                _saveResult.value = SaveResult.Success
+            } catch (e: Exception) {
+                _saveResult.value = SaveResult.Error(e.message ?: "保存失败")
+            }
+        }
+    }
+
+    fun clearSaveResult() {
+        _saveResult.value = null
+    }
+}
+
+/**
+ * 表单状态
+ */
+data class ItemFormState(
+    val itemId: String = UUID.randomUUID().toString(),
+    val nameCn: String = "",
+    val nameEn: String = "",
+    val ipName: String = "",
+    val producer: String = "",
+    val originPlaces: List<String> = emptyList(),
+    val saleFormat: List<String> = emptyList(),
+    val sellMethod: String = "",
+    val price: String = "",
+    val category: String = "",
+    val sizes: List<String> = emptyList(),
+    val materials: List<String> = emptyList(),
+    val characters: List<String> = emptyList(),
+    val artTypes: List<String> = emptyList(),
+    val status: String = "无伤",
+    val damageDetails: List<String> = emptyList(),
+    val version: String = "",
+    val quantity: String = "1",
+    val note: String = "",
+    val imagePaths: List<String> = emptyList(),
+    val isEditMode: Boolean = false,
+    val validationErrors: Map<String, String> = emptyMap()
+)
+
+/**
+ * 保存结果
+ */
+sealed class SaveResult {
+    data object Success : SaveResult()
+    data class Error(val message: String) : SaveResult()
+}

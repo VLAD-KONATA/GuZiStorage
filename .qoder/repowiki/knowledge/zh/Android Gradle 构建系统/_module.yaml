@@ -1,0 +1,12 @@
+schema_version: 1
+module_path: build_system
+title: Android Gradle 构建系统
+scope: []
+source_files:
+    - GuZiStorage/build.gradle.kts
+    - GuZiStorage/app/build.gradle.kts
+    - GuZiStorage/settings.gradle.kts
+    - GuZiStorage/gradle/libs.versions.toml
+    - GuZiStorage/gradle.properties
+depends_on: []
+related_to: []

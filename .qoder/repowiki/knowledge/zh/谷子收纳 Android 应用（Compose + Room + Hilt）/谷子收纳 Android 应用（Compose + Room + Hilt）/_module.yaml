@@ -1,0 +1,8 @@
+schema_version: 1
+module_path: android_app
+title: 谷子收纳 Android 应用（Compose + Room + Hilt）
+scope:
+    - GuZiStorage/
+source_files: []
+depends_on: []
+related_to: []

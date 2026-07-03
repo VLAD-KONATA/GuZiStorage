@@ -1,0 +1,75 @@
+schema_version: 1
+module_path: ""
+title: 谷子收纳 Android 应用（Compose + Room + Hilt）
+scope:
+    - 基础prd.md
+    - .qoder\repowiki\zh\content\产品需求文档\产品需求文档.md
+    - .qoder\repowiki\zh\content\产品需求文档\数据模型设计.md
+    - .qoder\repowiki\zh\content\产品需求文档\核心实体说明\交易记录实体详细说明.md
+    - .qoder\repowiki\zh\content\产品需求文档\核心实体说明\核心实体说明.md
+    - .qoder\repowiki\zh\content\产品需求文档\核心实体说明\物品实体详细说明.md
+    - .qoder\repowiki\zh\content\产品需求文档\状态管理规则.md
+    - .qoder\repowiki\zh\content\产品需求文档\预设选项系统.md
+    - .qoder\repowiki\zh\content\开发指南.md
+    - .qoder\repowiki\zh\content\技术架构设计\性能优化考虑.md
+    - .qoder\repowiki\zh\content\技术架构设计\技术架构设计.md
+    - .qoder\repowiki\zh\content\技术架构设计\数据库设计.md
+    - .qoder\repowiki\zh\content\技术架构设计\数据模型扩展机制.md
+    - .qoder\repowiki\zh\content\技术架构设计\移动端架构设计.md
+    - .qoder\repowiki\zh\content\核心功能模块\搜索与展示功能.md
+    - .qoder\repowiki\zh\content\核心功能模块\数据录入与管理.md
+    - .qoder\repowiki\zh\content\核心功能模块\数据模型与关联.md
+    - .qoder\repowiki\zh\content\核心功能模块\核心功能模块.md
+    - .qoder\repowiki\zh\content\核心功能模块\记录操作功能.md
+    - .qoder\repowiki\zh\content\用户界面设计\交互模式规范.md
+    - .qoder\repowiki\zh\content\用户界面设计\用户界面设计.md
+    - .qoder\repowiki\zh\content\用户界面设计\视觉设计系统.md
+    - .qoder\repowiki\zh\content\用户界面设计\页面布局设计.md
+    - .qoder\repowiki\zh\content\项目概述.md
+    - .qoder\repowiki\zh\meta\repowiki-metadata.json
+    - .vscode\settings.json
+    - GuZiStorage\.gitignore
+    - GuZiStorage\.idea\.gitignore
+    - GuZiStorage\.idea\AndroidProjectSystem.xml
+    - GuZiStorage\.idea\codeStyles\Project.xml
+    - GuZiStorage\.idea\codeStyles\codeStyleConfig.xml
+    - GuZiStorage\.idea\compiler.xml
+    - GuZiStorage\.idea\deploymentTargetSelector.xml
+    - GuZiStorage\.idea\deviceManager.xml
+    - GuZiStorage\.idea\gradle.xml
+    - GuZiStorage\.idea\migrations.xml
+    - GuZiStorage\.idea\misc.xml
+    - GuZiStorage\.idea\runConfigurations.xml
+    - GuZiStorage\.idea\workspace.xml
+    - GuZiStorage\app\build.gradle.kts
+    - GuZiStorage\app\proguard-rules.pro
+    - GuZiStorage\app\src\main\AndroidManifest.xml
+    - GuZiStorage\app\src\main\java\com\guzi\storage\GuZiStorageApp.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\MainActivity.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\AppDatabase.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\PipeListConverter.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\dao\ItemDao.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\dao\PresetOptionDao.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\dao\TransactionDao.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\entity\ItemEntity.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\entity\PresetOptionEntity.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\local\entity\TransactionEntity.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\repository\ItemRepository.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\data\repository\TransactionRepository.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\di\AppModule.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\domain\model\Item.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\domain\model\Transaction.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\ui\theme\Color.kt
+    - GuZiStorage\app\src\main\java\com\guzi\storage\ui\theme\Theme.kt
+    - GuZiStorage\app\src\main\res\values\strings.xml
+    - GuZiStorage\app\src\main\res\values\themes.xml
+    - GuZiStorage\build.gradle.kts
+    - GuZiStorage\gradle.properties
+    - GuZiStorage\gradle\libs.versions.toml
+    - GuZiStorage\gradle\wrapper\gradle-wrapper.properties
+    - GuZiStorage\local.properties
+    - GuZiStorage\settings.gradle.kts
+    - 收纳app需求.txt
+source_files: []
+depends_on: []
+related_to: []

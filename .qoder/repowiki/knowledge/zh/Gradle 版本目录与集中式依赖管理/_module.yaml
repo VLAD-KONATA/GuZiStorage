@@ -1,0 +1,11 @@
+schema_version: 1
+module_path: dependency_management
+title: Gradle 版本目录与集中式依赖管理
+scope: []
+source_files:
+    - GuZiStorage/gradle/libs.versions.toml
+    - GuZiStorage/settings.gradle.kts
+    - GuZiStorage/build.gradle.kts
+    - GuZiStorage/app/build.gradle.kts
+depends_on: []
+related_to: []
