@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guzi.storage.data.repository.ItemRepository
 import com.guzi.storage.data.repository.PresetOptionRepository
+import com.guzi.storage.data.repository.UserPreferencesRepository
 import com.guzi.storage.domain.model.Item
 import com.guzi.storage.util.ImageFileManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,7 +26,8 @@ import javax.inject.Inject
 class AddItemViewModel @Inject constructor(
     private val itemRepository: ItemRepository,
     private val presetOptionRepository: PresetOptionRepository,
-    private val imageFileManager: ImageFileManager
+    private val imageFileManager: ImageFileManager,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
     // ===== 表单状态 =====
@@ -93,6 +95,17 @@ class AddItemViewModel @Inject constructor(
             _artTypeOptions.value = presetOptionRepository.getOptionValues("art_types")
             _statusOptions.value = presetOptionRepository.getOptionValues("status")
             _versionOptions.value = presetOptionRepository.getOptionValues("version")
+        }
+    }
+
+    /**
+     * 添加模式下预填 IP 名（从分组页进入时）
+     */
+    fun setDefaultIpName(ipName: String) {
+        if (ipName.isBlank()) return
+        val current = _formState.value
+        if (!current.isEditMode && current.ipName.isBlank()) {
+            _formState.value = current.copy(ipName = ipName)
         }
     }
 
@@ -203,14 +216,17 @@ class AddItemViewModel @Inject constructor(
     }
 
     /**
-     * 添加图片
+     * 批量添加图片
+     *
+     * @param uris 图片 URI 列表
+     * @param compress true=压缩存储，false=存储原图
      */
-    fun addImage(uri: Uri) {
+    fun addImages(uris: List<Uri>, compress: Boolean) {
         val itemId = _formState.value.itemId
-        val path = imageFileManager.copyImageToItemDir(itemId, uri)
-        if (path != null) {
+        val paths = imageFileManager.copyImages(itemId, uris, compress)
+        if (paths.isNotEmpty()) {
             _formState.value = _formState.value.copy(
-                imagePaths = _formState.value.imagePaths + path
+                imagePaths = _formState.value.imagePaths + paths
             )
         }
     }
@@ -226,14 +242,10 @@ class AddItemViewModel @Inject constructor(
     }
 
     /**
-     * 添加新预设选项（自动添加功能）
+     * 添加新预设选项（已不再使用，保留空实现防止引用报错）
      */
-    fun addNewPresetOption(attributeName: String, value: String) {
-        viewModelScope.launch {
-            presetOptionRepository.addOption(attributeName, value)
-            loadPresetOptions() // 重新加载
-        }
-    }
+    @Deprecated("新选项已在 save() 成功后统一保存")
+    fun addNewPresetOption(attributeName: String, value: String) = Unit
 
     // ===== 校验 =====
 
@@ -303,6 +315,11 @@ class AddItemViewModel @Inject constructor(
                     itemRepository.addItem(item)
                 }
 
+                // 保存成功后，如果开启了自动添加预设，则将尚未在预设库中的新值写入
+                if (userPreferencesRepository.isAutoSavePresetsEnabled()) {
+                    saveNewPresetsFromState(state)
+                }
+
                 _saveResult.value = SaveResult.Success
             } catch (e: Exception) {
                 _saveResult.value = SaveResult.Error(e.message ?: "保存失败")
@@ -312,6 +329,31 @@ class AddItemViewModel @Inject constructor(
 
     fun clearSaveResult() {
         _saveResult.value = null
+    }
+
+    /**
+     * 保存成功后，把表单中尚未在预设库里的新值写入
+     */
+    private suspend fun saveNewPresetsFromState(state: ItemFormState) {
+        fun List<String>.newItems(existing: List<String>) = filter { it.isNotBlank() && it !in existing }
+        fun String.newItem(existing: List<String>) = if (isNotBlank() && this !in existing) this else null
+
+        state.ipName.newItem(_ipOptions.value)?.let { presetOptionRepository.addOption("ip_name", it) }
+        state.producer.newItem(_producerOptions.value)?.let { presetOptionRepository.addOption("producer", it) }
+        state.sellMethod.newItem(_sellMethodOptions.value)?.let { presetOptionRepository.addOption("sell_method", it) }
+        state.category.newItem(_categoryOptions.value)?.let { presetOptionRepository.addOption("category", it) }
+        state.version.newItem(_versionOptions.value)?.let { presetOptionRepository.addOption("version", it) }
+        state.status.newItem(_statusOptions.value)?.let { presetOptionRepository.addOption("status", it) }
+
+        state.originPlaces.newItems(_originPlaceOptions.value).forEach { presetOptionRepository.addOption("origin_places", it) }
+        state.saleFormat.newItems(_saleFormatOptions.value).forEach { presetOptionRepository.addOption("sale_format", it) }
+        state.sizes.newItems(_sizeOptions.value).forEach { presetOptionRepository.addOption("sizes", it) }
+        state.materials.newItems(_materialOptions.value).forEach { presetOptionRepository.addOption("materials", it) }
+        state.characters.newItems(_characterOptions.value).forEach { presetOptionRepository.addOption("characters", it) }
+        state.artTypes.newItems(_artTypeOptions.value).forEach { presetOptionRepository.addOption("art_types", it) }
+
+        // 写入后刷新预设列表
+        loadPresetOptions()
     }
 }
 

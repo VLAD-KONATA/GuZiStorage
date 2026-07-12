@@ -53,10 +53,8 @@ fun PresetDropdown(
                 value = value,
                 onValueChange = { newValue ->
                     onValueChange(newValue)
-                    // 检测是否为新输入的值
-                    if (newValue.isNotBlank() && newValue !in options) {
-                        onNewOption?.invoke(newValue)
-                    }
+                    // 注：不在这里调用 onNewOption，防止每次按键都写入数据库
+                    // 新选项的保存由 ViewModel 在保存成功后统一处理
                 },
                 label = {
                     Text(if (required) "$label *" else label)

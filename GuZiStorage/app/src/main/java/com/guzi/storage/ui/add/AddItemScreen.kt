@@ -19,17 +19,23 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -43,6 +49,7 @@ import com.guzi.storage.ui.components.PresetDropdown
 @Composable
 fun AddItemScreen(
     itemId: String? = null,
+    defaultIpName: String? = null,
     onNavigateBack: () -> Unit = {},
     viewModel: AddItemViewModel = hiltViewModel()
 ) {
@@ -64,17 +71,24 @@ fun AddItemScreen(
     val statusOptions by viewModel.statusOptions.collectAsState()
     val versionOptions by viewModel.versionOptions.collectAsState()
 
+    // 图片压缩选项
+    var compressImages by rememberSaveable { mutableStateOf(true) }
+
     // 图片选择器
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris: List<Uri> ->
-        uris.forEach { viewModel.addImage(it) }
+        if (uris.isNotEmpty()) {
+            viewModel.addImages(uris, compressImages)
+        }
     }
 
     // 编辑模式加载数据
     LaunchedEffect(itemId) {
         if (itemId != null) {
             viewModel.loadItem(itemId)
+        } else if (defaultIpName != null) {
+            viewModel.setDefaultIpName(defaultIpName)
         }
     }
 
@@ -148,7 +162,6 @@ fun AddItemScreen(
                 value = formState.ipName,
                 options = ipOptions,
                 onValueChange = viewModel::updateIpName,
-                onNewOption = { viewModel.addNewPresetOption("ip_name", it) },
                 required = true,
                 isError = "ipName" in formState.validationErrors,
                 errorMessage = formState.validationErrors["ipName"]
@@ -158,16 +171,14 @@ fun AddItemScreen(
                 label = "出品商",
                 value = formState.producer,
                 options = producerOptions,
-                onValueChange = viewModel::updateProducer,
-                onNewOption = { viewModel.addNewPresetOption("producer", it) }
+                onValueChange = viewModel::updateProducer
             )
 
             MultiSelectField(
                 label = "出品地",
                 selectedValues = formState.originPlaces,
                 options = originPlaceOptions,
-                onValuesChange = viewModel::updateOriginPlaces,
-                onNewOption = { viewModel.addNewPresetOption("origin_places", it) }
+                onValuesChange = viewModel::updateOriginPlaces
             )
 
             MultiSelectField(
@@ -175,7 +186,6 @@ fun AddItemScreen(
                 selectedValues = formState.saleFormat,
                 options = saleFormatOptions,
                 onValuesChange = viewModel::updateSaleFormat,
-                onNewOption = { viewModel.addNewPresetOption("sale_format", it) },
                 required = true,
                 isError = "saleFormat" in formState.validationErrors,
                 errorMessage = formState.validationErrors["saleFormat"]
@@ -186,7 +196,6 @@ fun AddItemScreen(
                 value = formState.sellMethod,
                 options = sellMethodOptions,
                 onValueChange = viewModel::updateSellMethod,
-                onNewOption = { viewModel.addNewPresetOption("sell_method", it) },
                 required = true,
                 isError = "sellMethod" in formState.validationErrors,
                 errorMessage = formState.validationErrors["sellMethod"]
@@ -209,24 +218,21 @@ fun AddItemScreen(
                 label = "种类",
                 value = formState.category,
                 options = categoryOptions,
-                onValueChange = viewModel::updateCategory,
-                onNewOption = { viewModel.addNewPresetOption("category", it) }
+                onValueChange = viewModel::updateCategory
             )
 
             MultiSelectField(
                 label = "尺寸",
                 selectedValues = formState.sizes,
                 options = sizeOptions,
-                onValuesChange = viewModel::updateSizes,
-                onNewOption = { viewModel.addNewPresetOption("sizes", it) }
+                onValuesChange = viewModel::updateSizes
             )
 
             MultiSelectField(
                 label = "材质",
                 selectedValues = formState.materials,
                 options = materialOptions,
-                onValuesChange = viewModel::updateMaterials,
-                onNewOption = { viewModel.addNewPresetOption("materials", it) }
+                onValuesChange = viewModel::updateMaterials
             )
 
             MultiSelectField(
@@ -234,7 +240,6 @@ fun AddItemScreen(
                 selectedValues = formState.characters,
                 options = characterOptions,
                 onValuesChange = viewModel::updateCharacters,
-                onNewOption = { viewModel.addNewPresetOption("characters", it) },
                 required = true,
                 isError = "characters" in formState.validationErrors,
                 errorMessage = formState.validationErrors["characters"]
@@ -245,7 +250,6 @@ fun AddItemScreen(
                 selectedValues = formState.artTypes,
                 options = artTypeOptions,
                 onValuesChange = viewModel::updateArtTypes,
-                onNewOption = { viewModel.addNewPresetOption("art_types", it) },
                 required = true,
                 isError = "artTypes" in formState.validationErrors,
                 errorMessage = formState.validationErrors["artTypes"]
@@ -258,8 +262,7 @@ fun AddItemScreen(
                 label = "状态",
                 value = formState.status,
                 options = statusOptions,
-                onValueChange = viewModel::updateStatus,
-                onNewOption = { viewModel.addNewPresetOption("status", it) }
+                onValueChange = viewModel::updateStatus
             )
 
             if (formState.status != "无伤") {
@@ -275,8 +278,7 @@ fun AddItemScreen(
                 label = "版本",
                 value = formState.version,
                 options = versionOptions,
-                onValueChange = viewModel::updateVersion,
-                onNewOption = { viewModel.addNewPresetOption("version", it) }
+                onValueChange = viewModel::updateVersion
             )
 
             OutlinedTextField(
@@ -294,15 +296,25 @@ fun AddItemScreen(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                androidx.compose.material3.OutlinedButton(
-                    onClick = { imagePickerLauncher.launch("image/*") },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.Add, contentDescription = null)
-                    Text("  添加图片")
-                }
+                Text(
+                    text = "压缩存储（节省空间）",
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium
+                )
+                Switch(
+                    checked = compressImages,
+                    onCheckedChange = { compressImages = it }
+                )
+            }
+
+            OutlinedButton(
+                onClick = { imagePickerLauncher.launch("image/*") },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null)
+                Text("  批量添加图片")
             }
 
             if (formState.imagePaths.isNotEmpty()) {

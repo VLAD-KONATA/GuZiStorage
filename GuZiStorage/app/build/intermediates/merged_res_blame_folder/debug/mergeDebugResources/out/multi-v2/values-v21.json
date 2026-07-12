@@ -4,7 +4,7 @@
             "outputFile": "com.guzi.storage.app-mergeDebugResources-2:/values-v21/values-v21.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\mingfei.yang\\.gradle\\caches\\transforms-4\\4a7e9e91ed257d42ba36c7b7594571f4\\transformed\\core-1.13.1\\res\\values-v21\\values-v21.xml",
+                    "source": "D:\\Users\\VLADKONATA\\.gradle\\caches\\transforms-4\\4a7e9e91ed257d42ba36c7b7594571f4\\transformed\\core-1.13.1\\res\\values-v21\\values-v21.xml",
                     "from": {
                         "startLines": "2,3,4,5,6,7,8,9,10,13",
                         "startColumns": "4,4,4,4,4,4,4,4,4,4",

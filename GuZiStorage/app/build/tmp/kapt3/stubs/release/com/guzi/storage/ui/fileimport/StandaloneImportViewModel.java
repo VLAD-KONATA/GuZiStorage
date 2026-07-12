@@ -1,0 +1,381 @@
+package com.guzi.storage.ui.fileimport;
+
+import android.content.Context;
+import android.net.Uri;
+import androidx.lifecycle.SavedStateHandle;
+import androidx.lifecycle.ViewModel;
+import com.guzi.storage.data.repository.ItemRepository;
+import com.guzi.storage.data.repository.PresetOptionRepository;
+import com.guzi.storage.data.repository.TransactionRepository;
+import com.guzi.storage.domain.model.Item;
+import com.guzi.storage.domain.model.Transaction;
+import com.guzi.storage.domain.model.TransactionType;
+import com.guzi.storage.util.ImageFileManager;
+import dagger.hilt.android.lifecycle.HiltViewModel;
+import dagger.hilt.android.qualifiers.ApplicationContext;
+import kotlinx.coroutines.flow.StateFlow;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.util.UUID;
+import java.util.zip.ZipInputStream;
+import javax.inject.Inject;
+
+/**
+ * 单独文件导入 ViewModel
+ *
+ * 支持三种导入模式：
+ * - items.csv：导入谷子信息（含去重合并）
+ * - transactions.csv：导入交易记录（id 须对应已有谷子）
+ * - image.zip：导入图片（子目录名须对应已有谷子 id）
+ */
+@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000\u00a2\u0001\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u0002\n\u0000\n\u0002\u0010 \n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0010\u000e\n\u0000\n\u0002\u0010$\n\u0002\u0010\b\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0007\n\u0002\u0010\u000b\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\t\b\u0007\u0018\u00002\u00020\u0001:\u0001MB9\b\u0007\u0012\b\b\u0001\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u0012\u0006\u0010\b\u001a\u00020\t\u0012\u0006\u0010\n\u001a\u00020\u000b\u0012\u0006\u0010\f\u001a\u00020\r\u00a2\u0006\u0002\u0010\u000eJ\u001c\u0010\u001e\u001a\u00020\u001f2\f\u0010 \u001a\b\u0012\u0004\u0012\u00020\"0!H\u0082@\u00a2\u0006\u0002\u0010#J,\u0010$\u001a\u0004\u0018\u00010\"2\f\u0010%\u001a\b\u0012\u0004\u0012\u00020&0!2\u0012\u0010\'\u001a\u000e\u0012\u0004\u0012\u00020&\u0012\u0004\u0012\u00020)0(H\u0002J\"\u0010*\u001a\u000e\u0012\u0004\u0012\u00020&\u0012\u0004\u0012\u00020)0(2\f\u0010+\u001a\b\u0012\u0004\u0012\u00020&0!H\u0002J\"\u0010,\u001a\u000e\u0012\u0004\u0012\u00020&\u0012\u0004\u0012\u00020)0(2\f\u0010+\u001a\b\u0012\u0004\u0012\u00020&0!H\u0002J\b\u0010-\u001a\u00020\u001fH\u0002J\u0016\u0010.\u001a\u00020\u001f2\u0006\u0010/\u001a\u000200H\u0082@\u00a2\u0006\u0002\u00101J\u0006\u00102\u001a\u00020\u001fJ\u0016\u00103\u001a\u00020\u001f2\u0006\u0010/\u001a\u000204H\u0082@\u00a2\u0006\u0002\u00105J\u0016\u00106\u001a\u00020\u001f2\u0006\u0010/\u001a\u000207H\u0082@\u00a2\u0006\u0002\u00108J\u001a\u00109\u001a\u0004\u0018\u00010\u001d2\u0006\u0010:\u001a\u00020\u001d2\u0006\u0010;\u001a\u00020&H\u0002J2\u0010<\u001a\u00020&2\f\u0010%\u001a\b\u0012\u0004\u0012\u00020&0!2\u0012\u0010\'\u001a\u000e\u0012\u0004\u0012\u00020&\u0012\u0004\u0012\u00020)0(2\u0006\u0010=\u001a\u00020&H\u0002J\u0018\u0010>\u001a\u00020?2\u0006\u0010@\u001a\u00020\"2\u0006\u0010A\u001a\u00020\"H\u0002J\b\u0010B\u001a\u00020\u001fH\u0014J\u000e\u0010C\u001a\u00020\u001f2\u0006\u0010D\u001a\u00020EJ\u0016\u0010F\u001a\u0002002\u0006\u0010D\u001a\u00020EH\u0082@\u00a2\u0006\u0002\u0010GJ\u0016\u0010H\u001a\u0002042\u0006\u0010D\u001a\u00020EH\u0082@\u00a2\u0006\u0002\u0010GJ\u0016\u0010I\u001a\u0002072\u0006\u0010D\u001a\u00020EH\u0082@\u00a2\u0006\u0002\u0010GJ\u0006\u0010J\u001a\u00020\u001fJ\u0016\u0010K\u001a\b\u0012\u0004\u0012\u00020&0!2\u0006\u0010L\u001a\u00020&H\u0002R\u0014\u0010\u000f\u001a\b\u0012\u0004\u0012\u00020\u00110\u0010X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\n\u001a\u00020\u000bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00110\u0013\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0014\u0010\u0015R\u0011\u0010\u0016\u001a\u00020\u0017\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0018\u0010\u0019R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\b\u001a\u00020\tX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0010\u0010\u001a\u001a\u0004\u0018\u00010\u001bX\u0082\u000e\u00a2\u0006\u0002\n\u0000R\u0010\u0010\u001c\u001a\u0004\u0018\u00010\u001dX\u0082\u000e\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0007X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006N"}, d2 = {"Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel;", "Landroidx/lifecycle/ViewModel;", "context", "Landroid/content/Context;", "itemRepository", "Lcom/guzi/storage/data/repository/ItemRepository;", "transactionRepository", "Lcom/guzi/storage/data/repository/TransactionRepository;", "presetOptionRepository", "Lcom/guzi/storage/data/repository/PresetOptionRepository;", "imageFileManager", "Lcom/guzi/storage/util/ImageFileManager;", "savedStateHandle", "Landroidx/lifecycle/SavedStateHandle;", "(Landroid/content/Context;Lcom/guzi/storage/data/repository/ItemRepository;Lcom/guzi/storage/data/repository/TransactionRepository;Lcom/guzi/storage/data/repository/PresetOptionRepository;Lcom/guzi/storage/util/ImageFileManager;Landroidx/lifecycle/SavedStateHandle;)V", "_importState", "Lkotlinx/coroutines/flow/MutableStateFlow;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState;", "importState", "Lkotlinx/coroutines/flow/StateFlow;", "getImportState", "()Lkotlinx/coroutines/flow/StateFlow;", "importType", "Lcom/guzi/storage/ui/fileimport/StandaloneImportType;", "getImportType", "()Lcom/guzi/storage/ui/fileimport/StandaloneImportType;", "previewData", "Lcom/guzi/storage/ui/fileimport/StandalonePreviewData;", "tempDir", "Ljava/io/File;", "autoSavePresets", "", "items", "", "Lcom/guzi/storage/domain/model/Item;", "(Ljava/util/List;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "buildItem", "cols", "", "colIndex", "", "", "buildItemColMap", "headers", "buildTransactionColMap", "cleanupTempDir", "confirmImageZip", "data", "Lcom/guzi/storage/ui/fileimport/StandalonePreviewData$ImagesPreview;", "(Lcom/guzi/storage/ui/fileimport/StandalonePreviewData$ImagesPreview;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "confirmImport", "confirmItemsCsv", "Lcom/guzi/storage/ui/fileimport/StandalonePreviewData$ItemsPreview;", "(Lcom/guzi/storage/ui/fileimport/StandalonePreviewData$ItemsPreview;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "confirmTransactionsCsv", "Lcom/guzi/storage/ui/fileimport/StandalonePreviewData$TransactionsPreview;", "(Lcom/guzi/storage/ui/fileimport/StandalonePreviewData$TransactionsPreview;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "findDirRecursive", "dir", "name", "getCol", "key", "isDuplicateItem", "", "existing", "imported", "onCleared", "parseFile", "uri", "Landroid/net/Uri;", "parseImageZipFile", "(Landroid/net/Uri;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;", "parseItemsCsvFile", "parseTransactionsCsvFile", "reset", "splitCsvLine", "line", "ImportState", "app_release"})
+@dagger.hilt.android.lifecycle.HiltViewModel()
+public final class StandaloneImportViewModel extends androidx.lifecycle.ViewModel {
+    @org.jetbrains.annotations.NotNull()
+    private final android.content.Context context = null;
+    @org.jetbrains.annotations.NotNull()
+    private final com.guzi.storage.data.repository.ItemRepository itemRepository = null;
+    @org.jetbrains.annotations.NotNull()
+    private final com.guzi.storage.data.repository.TransactionRepository transactionRepository = null;
+    @org.jetbrains.annotations.NotNull()
+    private final com.guzi.storage.data.repository.PresetOptionRepository presetOptionRepository = null;
+    @org.jetbrains.annotations.NotNull()
+    private final com.guzi.storage.util.ImageFileManager imageFileManager = null;
+    @org.jetbrains.annotations.NotNull()
+    private final com.guzi.storage.ui.fileimport.StandaloneImportType importType = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.MutableStateFlow<com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState> _importState = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.StateFlow<com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState> importState = null;
+    @org.jetbrains.annotations.Nullable()
+    private com.guzi.storage.ui.fileimport.StandalonePreviewData previewData;
+    @org.jetbrains.annotations.Nullable()
+    private java.io.File tempDir;
+    
+    @javax.inject.Inject()
+    public StandaloneImportViewModel(@dagger.hilt.android.qualifiers.ApplicationContext()
+    @org.jetbrains.annotations.NotNull()
+    android.content.Context context, @org.jetbrains.annotations.NotNull()
+    com.guzi.storage.data.repository.ItemRepository itemRepository, @org.jetbrains.annotations.NotNull()
+    com.guzi.storage.data.repository.TransactionRepository transactionRepository, @org.jetbrains.annotations.NotNull()
+    com.guzi.storage.data.repository.PresetOptionRepository presetOptionRepository, @org.jetbrains.annotations.NotNull()
+    com.guzi.storage.util.ImageFileManager imageFileManager, @org.jetbrains.annotations.NotNull()
+    androidx.lifecycle.SavedStateHandle savedStateHandle) {
+        super();
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final com.guzi.storage.ui.fileimport.StandaloneImportType getImportType() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final kotlinx.coroutines.flow.StateFlow<com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState> getImportState() {
+        return null;
+    }
+    
+    public final void parseFile(@org.jetbrains.annotations.NotNull()
+    android.net.Uri uri) {
+    }
+    
+    public final void confirmImport() {
+    }
+    
+    public final void reset() {
+    }
+    
+    private final java.lang.Object parseItemsCsvFile(android.net.Uri uri, kotlin.coroutines.Continuation<? super com.guzi.storage.ui.fileimport.StandalonePreviewData.ItemsPreview> $completion) {
+        return null;
+    }
+    
+    private final java.lang.Object confirmItemsCsv(com.guzi.storage.ui.fileimport.StandalonePreviewData.ItemsPreview data, kotlin.coroutines.Continuation<? super kotlin.Unit> $completion) {
+        return null;
+    }
+    
+    private final java.lang.Object parseTransactionsCsvFile(android.net.Uri uri, kotlin.coroutines.Continuation<? super com.guzi.storage.ui.fileimport.StandalonePreviewData.TransactionsPreview> $completion) {
+        return null;
+    }
+    
+    private final java.lang.Object confirmTransactionsCsv(com.guzi.storage.ui.fileimport.StandalonePreviewData.TransactionsPreview data, kotlin.coroutines.Continuation<? super kotlin.Unit> $completion) {
+        return null;
+    }
+    
+    private final java.lang.Object parseImageZipFile(android.net.Uri uri, kotlin.coroutines.Continuation<? super com.guzi.storage.ui.fileimport.StandalonePreviewData.ImagesPreview> $completion) {
+        return null;
+    }
+    
+    private final java.lang.Object confirmImageZip(com.guzi.storage.ui.fileimport.StandalonePreviewData.ImagesPreview data, kotlin.coroutines.Continuation<? super kotlin.Unit> $completion) {
+        return null;
+    }
+    
+    /**
+     * 递归搜索指定目录名
+     */
+    private final java.io.File findDirRecursive(java.io.File dir, java.lang.String name) {
+        return null;
+    }
+    
+    /**
+     * 判断两个物品是否在指定字段上完全相同（用于导入去重）
+     */
+    private final boolean isDuplicateItem(com.guzi.storage.domain.model.Item existing, com.guzi.storage.domain.model.Item imported) {
+        return false;
+    }
+    
+    private final java.util.Map<java.lang.String, java.lang.Integer> buildItemColMap(java.util.List<java.lang.String> headers) {
+        return null;
+    }
+    
+    private final java.util.Map<java.lang.String, java.lang.Integer> buildTransactionColMap(java.util.List<java.lang.String> headers) {
+        return null;
+    }
+    
+    private final java.lang.String getCol(java.util.List<java.lang.String> cols, java.util.Map<java.lang.String, java.lang.Integer> colIndex, java.lang.String key) {
+        return null;
+    }
+    
+    private final com.guzi.storage.domain.model.Item buildItem(java.util.List<java.lang.String> cols, java.util.Map<java.lang.String, java.lang.Integer> colIndex) {
+        return null;
+    }
+    
+    private final java.util.List<java.lang.String> splitCsvLine(java.lang.String line) {
+        return null;
+    }
+    
+    private final java.lang.Object autoSavePresets(java.util.List<com.guzi.storage.domain.model.Item> items, kotlin.coroutines.Continuation<? super kotlin.Unit> $completion) {
+        return null;
+    }
+    
+    private final void cleanupTempDir() {
+    }
+    
+    @java.lang.Override()
+    protected void onCleared() {
+    }
+    
+    @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000\"\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0006\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\b7\u0018\u00002\u00020\u0001:\u0005\u0003\u0004\u0005\u0006\u0007B\u0007\b\u0004\u00a2\u0006\u0002\u0010\u0002\u0082\u0001\u0005\b\t\n\u000b\f\u00a8\u0006\r"}, d2 = {"Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState;", "", "()V", "Done", "Error", "Idle", "Loading", "Preview", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Done;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Error;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Idle;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Loading;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Preview;", "app_release"})
+    public static abstract class ImportState {
+        
+        private ImportState() {
+            super();
+        }
+        
+        @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000,\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\b\n\u0002\b\u0004\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0002\b\u000f\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0000\n\u0002\b\u0003\b\u0087\b\u0018\u00002\u00020\u0001B3\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0003\u0012\u0006\u0010\u0005\u001a\u00020\u0003\u0012\u0006\u0010\u0006\u001a\u00020\u0003\u0012\f\u0010\u0007\u001a\b\u0012\u0004\u0012\u00020\t0\b\u00a2\u0006\u0002\u0010\nJ\t\u0010\u0012\u001a\u00020\u0003H\u00c6\u0003J\t\u0010\u0013\u001a\u00020\u0003H\u00c6\u0003J\t\u0010\u0014\u001a\u00020\u0003H\u00c6\u0003J\t\u0010\u0015\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010\u0016\u001a\b\u0012\u0004\u0012\u00020\t0\bH\u00c6\u0003JA\u0010\u0017\u001a\u00020\u00002\b\b\u0002\u0010\u0002\u001a\u00020\u00032\b\b\u0002\u0010\u0004\u001a\u00020\u00032\b\b\u0002\u0010\u0005\u001a\u00020\u00032\b\b\u0002\u0010\u0006\u001a\u00020\u00032\u000e\b\u0002\u0010\u0007\u001a\b\u0012\u0004\u0012\u00020\t0\bH\u00c6\u0001J\u0013\u0010\u0018\u001a\u00020\u00192\b\u0010\u001a\u001a\u0004\u0018\u00010\u001bH\u00d6\u0003J\t\u0010\u001c\u001a\u00020\u0003H\u00d6\u0001J\t\u0010\u001d\u001a\u00020\tH\u00d6\u0001R\u0017\u0010\u0007\u001a\b\u0012\u0004\u0012\u00020\t0\b\u00a2\u0006\b\n\u0000\u001a\u0004\b\u000b\u0010\fR\u0011\u0010\u0005\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\r\u0010\u000eR\u0011\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u000f\u0010\u000eR\u0011\u0010\u0006\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0010\u0010\u000eR\u0011\u0010\u0004\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0011\u0010\u000e\u00a8\u0006\u001e"}, d2 = {"Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Done;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState;", "itemCount", "", "transactionCount", "imageCount", "mergedCount", "errorLines", "", "", "(IIIILjava/util/List;)V", "getErrorLines", "()Ljava/util/List;", "getImageCount", "()I", "getItemCount", "getMergedCount", "getTransactionCount", "component1", "component2", "component3", "component4", "component5", "copy", "equals", "", "other", "", "hashCode", "toString", "app_release"})
+        public static final class Done extends com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState {
+            private final int itemCount = 0;
+            private final int transactionCount = 0;
+            private final int imageCount = 0;
+            private final int mergedCount = 0;
+            @org.jetbrains.annotations.NotNull()
+            private final java.util.List<java.lang.String> errorLines = null;
+            
+            public Done(int itemCount, int transactionCount, int imageCount, int mergedCount, @org.jetbrains.annotations.NotNull()
+            java.util.List<java.lang.String> errorLines) {
+            }
+            
+            public final int getItemCount() {
+                return 0;
+            }
+            
+            public final int getTransactionCount() {
+                return 0;
+            }
+            
+            public final int getImageCount() {
+                return 0;
+            }
+            
+            public final int getMergedCount() {
+                return 0;
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final java.util.List<java.lang.String> getErrorLines() {
+                return null;
+            }
+            
+            public final int component1() {
+                return 0;
+            }
+            
+            public final int component2() {
+                return 0;
+            }
+            
+            public final int component3() {
+                return 0;
+            }
+            
+            public final int component4() {
+                return 0;
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final java.util.List<java.lang.String> component5() {
+                return null;
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState.Done copy(int itemCount, int transactionCount, int imageCount, int mergedCount, @org.jetbrains.annotations.NotNull()
+            java.util.List<java.lang.String> errorLines) {
+                return null;
+            }
+            
+            @java.lang.Override()
+            public boolean equals(@org.jetbrains.annotations.Nullable()
+            java.lang.Object other) {
+                return false;
+            }
+            
+            @java.lang.Override()
+            public int hashCode() {
+                return 0;
+            }
+            
+            @java.lang.Override()
+            @org.jetbrains.annotations.NotNull()
+            public java.lang.String toString() {
+                return null;
+            }
+        }
+        
+        @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000&\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0006\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\b\n\u0002\b\u0002\b\u0087\b\u0018\u00002\u00020\u0001B\r\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J\t\u0010\u0007\u001a\u00020\u0003H\u00c6\u0003J\u0013\u0010\b\u001a\u00020\u00002\b\b\u0002\u0010\u0002\u001a\u00020\u0003H\u00c6\u0001J\u0013\u0010\t\u001a\u00020\n2\b\u0010\u000b\u001a\u0004\u0018\u00010\fH\u00d6\u0003J\t\u0010\r\u001a\u00020\u000eH\u00d6\u0001J\t\u0010\u000f\u001a\u00020\u0003H\u00d6\u0001R\u0011\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0005\u0010\u0006\u00a8\u0006\u0010"}, d2 = {"Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Error;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState;", "message", "", "(Ljava/lang/String;)V", "getMessage", "()Ljava/lang/String;", "component1", "copy", "equals", "", "other", "", "hashCode", "", "toString", "app_release"})
+        public static final class Error extends com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState {
+            @org.jetbrains.annotations.NotNull()
+            private final java.lang.String message = null;
+            
+            public Error(@org.jetbrains.annotations.NotNull()
+            java.lang.String message) {
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final java.lang.String getMessage() {
+                return null;
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final java.lang.String component1() {
+                return null;
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState.Error copy(@org.jetbrains.annotations.NotNull()
+            java.lang.String message) {
+                return null;
+            }
+            
+            @java.lang.Override()
+            public boolean equals(@org.jetbrains.annotations.Nullable()
+            java.lang.Object other) {
+                return false;
+            }
+            
+            @java.lang.Override()
+            public int hashCode() {
+                return 0;
+            }
+            
+            @java.lang.Override()
+            @org.jetbrains.annotations.NotNull()
+            public java.lang.String toString() {
+                return null;
+            }
+        }
+        
+        @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000$\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u000e\n\u0000\b\u00c7\n\u0018\u00002\u00020\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002J\u0013\u0010\u0003\u001a\u00020\u00042\b\u0010\u0005\u001a\u0004\u0018\u00010\u0006H\u00d6\u0003J\t\u0010\u0007\u001a\u00020\bH\u00d6\u0001J\t\u0010\t\u001a\u00020\nH\u00d6\u0001\u00a8\u0006\u000b"}, d2 = {"Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Idle;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState;", "()V", "equals", "", "other", "", "hashCode", "", "toString", "", "app_release"})
+        public static final class Idle extends com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState {
+            @org.jetbrains.annotations.NotNull()
+            public static final com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState.Idle INSTANCE = null;
+            
+            private Idle() {
+            }
+            
+            @java.lang.Override()
+            public boolean equals(@org.jetbrains.annotations.Nullable()
+            java.lang.Object other) {
+                return false;
+            }
+            
+            @java.lang.Override()
+            public int hashCode() {
+                return 0;
+            }
+            
+            @java.lang.Override()
+            @org.jetbrains.annotations.NotNull()
+            public java.lang.String toString() {
+                return null;
+            }
+        }
+        
+        @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000$\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u000e\n\u0000\b\u00c7\n\u0018\u00002\u00020\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002J\u0013\u0010\u0003\u001a\u00020\u00042\b\u0010\u0005\u001a\u0004\u0018\u00010\u0006H\u00d6\u0003J\t\u0010\u0007\u001a\u00020\bH\u00d6\u0001J\t\u0010\t\u001a\u00020\nH\u00d6\u0001\u00a8\u0006\u000b"}, d2 = {"Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Loading;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState;", "()V", "equals", "", "other", "", "hashCode", "", "toString", "", "app_release"})
+        public static final class Loading extends com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState {
+            @org.jetbrains.annotations.NotNull()
+            public static final com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState.Loading INSTANCE = null;
+            
+            private Loading() {
+            }
+            
+            @java.lang.Override()
+            public boolean equals(@org.jetbrains.annotations.Nullable()
+            java.lang.Object other) {
+                return false;
+            }
+            
+            @java.lang.Override()
+            public int hashCode() {
+                return 0;
+            }
+            
+            @java.lang.Override()
+            @org.jetbrains.annotations.NotNull()
+            public java.lang.String toString() {
+                return null;
+            }
+        }
+        
+        @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000*\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\b\n\u0000\n\u0002\u0010\u000e\n\u0000\b\u0087\b\u0018\u00002\u00020\u0001B\r\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J\t\u0010\u0007\u001a\u00020\u0003H\u00c6\u0003J\u0013\u0010\b\u001a\u00020\u00002\b\b\u0002\u0010\u0002\u001a\u00020\u0003H\u00c6\u0001J\u0013\u0010\t\u001a\u00020\n2\b\u0010\u000b\u001a\u0004\u0018\u00010\fH\u00d6\u0003J\t\u0010\r\u001a\u00020\u000eH\u00d6\u0001J\t\u0010\u000f\u001a\u00020\u0010H\u00d6\u0001R\u0011\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0005\u0010\u0006\u00a8\u0006\u0011"}, d2 = {"Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState$Preview;", "Lcom/guzi/storage/ui/fileimport/StandaloneImportViewModel$ImportState;", "data", "Lcom/guzi/storage/ui/fileimport/StandalonePreviewData;", "(Lcom/guzi/storage/ui/fileimport/StandalonePreviewData;)V", "getData", "()Lcom/guzi/storage/ui/fileimport/StandalonePreviewData;", "component1", "copy", "equals", "", "other", "", "hashCode", "", "toString", "", "app_release"})
+        public static final class Preview extends com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState {
+            @org.jetbrains.annotations.NotNull()
+            private final com.guzi.storage.ui.fileimport.StandalonePreviewData data = null;
+            
+            public Preview(@org.jetbrains.annotations.NotNull()
+            com.guzi.storage.ui.fileimport.StandalonePreviewData data) {
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final com.guzi.storage.ui.fileimport.StandalonePreviewData getData() {
+                return null;
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final com.guzi.storage.ui.fileimport.StandalonePreviewData component1() {
+                return null;
+            }
+            
+            @org.jetbrains.annotations.NotNull()
+            public final com.guzi.storage.ui.fileimport.StandaloneImportViewModel.ImportState.Preview copy(@org.jetbrains.annotations.NotNull()
+            com.guzi.storage.ui.fileimport.StandalonePreviewData data) {
+                return null;
+            }
+            
+            @java.lang.Override()
+            public boolean equals(@org.jetbrains.annotations.Nullable()
+            java.lang.Object other) {
+                return false;
+            }
+            
+            @java.lang.Override()
+            public int hashCode() {
+                return 0;
+            }
+            
+            @java.lang.Override()
+            @org.jetbrains.annotations.NotNull()
+            public java.lang.String toString() {
+                return null;
+            }
+        }
+    }
+}

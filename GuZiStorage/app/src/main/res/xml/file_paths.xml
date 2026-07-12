@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- 提供 app cache 目录下的文件，用于备份 ZIP 文件的分享 -->
+    <cache-path name="backup_files" path="." />
+</paths>

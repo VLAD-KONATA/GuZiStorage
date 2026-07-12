@@ -26,6 +26,9 @@ class ItemRepository @Inject constructor(
     suspend fun getItemById(id: String): Item? =
         itemDao.getById(id)?.let { Item.fromEntity(it) }
 
+    fun getItemByIdFlow(id: String): Flow<Item?> =
+        itemDao.getByIdFlow(id).map { it?.let { entity -> Item.fromEntity(entity) } }
+
     fun getIpGroups(): Flow<List<IpGroupInfo>> =
         itemDao.getIpGroups()
 

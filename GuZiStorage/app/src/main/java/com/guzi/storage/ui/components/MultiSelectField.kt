@@ -67,7 +67,7 @@ fun MultiSelectField(
             ) {
                 selectedValues.forEach { value ->
                     AssistChip(
-                        onClick = { },
+                        onClick = { onValuesChange(selectedValues - value) },
                         label = { Text(value) },
                         trailingIcon = {
                             Icon(
@@ -93,9 +93,7 @@ fun MultiSelectField(
                 IconButton(onClick = {
                     if (inputText.isNotBlank() && inputText !in selectedValues) {
                         onValuesChange(selectedValues + inputText)
-                        if (inputText !in options) {
-                            onNewOption?.invoke(inputText)
-                        }
+                        // 注：不在这里调用 onNewOption，新选项由 ViewModel 保存成功后统一处理
                         inputText = ""
                     }
                 }) {

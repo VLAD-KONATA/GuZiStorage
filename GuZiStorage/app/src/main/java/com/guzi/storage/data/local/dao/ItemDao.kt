@@ -23,6 +23,9 @@ interface ItemDao {
     @Query("SELECT * FROM items WHERE id = :id")
     suspend fun getById(id: String): ItemEntity?
 
+    @Query("SELECT * FROM items WHERE id = :id")
+    fun getByIdFlow(id: String): Flow<ItemEntity?>
+
     /**
      * IP 分组信息
      */

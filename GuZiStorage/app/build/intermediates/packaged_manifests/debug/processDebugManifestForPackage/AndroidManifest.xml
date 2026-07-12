@@ -8,6 +8,11 @@
         android:minSdkVersion="26"
         android:targetSdkVersion="34" />
 
+    <!-- Android 12 以下读取外部存储（CSV 导入用） -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
     <permission
         android:name="com.guzi.storage.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
         android:protectionLevel="signature" />
@@ -36,6 +41,16 @@
             </intent-filter>
         </activity>
 
+        <!-- FileProvider 用于分享备份 ZIP 文件 -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.guzi.storage.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.guzi.storage.androidx-startup"
