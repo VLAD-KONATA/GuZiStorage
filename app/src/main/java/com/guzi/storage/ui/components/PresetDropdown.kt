@@ -1,0 +1,125 @@
+package com.guzi.storage.ui.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+
+/**
+ * 预设选项下拉组件
+ *
+ * 支持从预设选项列表选择，也支持手动输入新值
+ * 新增的值会通过 onNewOption 回调通知，由外部决定是否加入预设库
+ *
+ * @param label 字段标签（如 "IP名"、"出品商"）
+ * @param value 当前选中值
+ * @param options 预设选项列表
+ * @param onValueChange 值变化回调
+ * @param required 是否必填
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PresetDropdown(
+    label: String,
+    value: String,
+    options: List<String>,
+    onValueChange: (String) -> Unit,
+    onNewOption: ((String) -> Unit)? = null,
+    required: Boolean = false,
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    errorMessage: String? = null
+) {
+    var expanded by remember { mutableStateOf(false) }
+    // 选项列表折叠状态：选项超过阈值时默认折叠，选中或关闭菜单后恢复折叠
+    var listExpanded by remember { mutableStateOf(false) }
+
+    val collapseThreshold = 12
+    val shouldCollapse = options.size > collapseThreshold
+    val displayedOptions =
+        if (shouldCollapse && !listExpanded) options.take(collapseThreshold) else options
+
+    Column(modifier = modifier.fillMaxWidth()) {
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = it }
+        ) {
+            OutlinedTextField(
+                value = value,
+                onValueChange = { newValue ->
+                    onValueChange(newValue)
+                    // 注：不在这里调用 onNewOption，防止每次按键都写入数据库
+                    // 新选项的保存由 ViewModel 在保存成功后统一处理
+                },
+                label = {
+                    Text(if (required) "$label *" else label)
+                },
+                trailingIcon = {
+                    Icon(
+                        Icons.Default.ArrowDropDown,
+                        contentDescription = null
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .menuAnchor(),
+                singleLine = true,
+                isError = isError,
+                supportingText = if (isError && errorMessage != null) {
+                    { Text(errorMessage) }
+                } else null
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                    listExpanded = false
+                }
+            ) {
+                displayedOptions.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option) },
+                        onClick = {
+                            onValueChange(option)
+                            expanded = false
+                            listExpanded = false
+                        }
+                    )
+                }
+                if (shouldCollapse) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                if (listExpanded) "收起"
+                                else "展开更多（共 ${options.size} 项）"
+                            )
+                        },
+                        leadingIcon = {
+                            Icon(
+                                if (listExpanded) Icons.Default.ExpandLess
+                                else Icons.Default.ExpandMore,
+                                contentDescription = null
+                            )
+                        },
+                        onClick = { listExpanded = !listExpanded }
+                    )
+                }
+            }
+        }
+    }
+}
