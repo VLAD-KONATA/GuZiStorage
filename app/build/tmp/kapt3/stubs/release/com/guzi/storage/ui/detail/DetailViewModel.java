@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel;
 import com.guzi.storage.data.repository.ItemRepository;
 import com.guzi.storage.data.repository.TransactionRepository;
 import com.guzi.storage.domain.model.Item;
+import com.guzi.storage.util.ImageExportManager;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import kotlinx.coroutines.ExperimentalCoroutinesApi;
 import kotlinx.coroutines.flow.SharingStarted;
@@ -13,13 +14,15 @@ import javax.inject.Inject;
 /**
  * 物品详情页 ViewModel
  */
-@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000J\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0003\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0010\b\n\u0002\b\u0003\n\u0002\u0010\u0002\n\u0002\b\b\b\u0007\u0018\u00002\u00020\u0001B\u0017\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u00a2\u0006\u0002\u0010\u0006J\u0006\u0010\u001c\u001a\u00020\u001dJ\u0006\u0010\u001e\u001a\u00020\u001dJ\u0006\u0010\u001f\u001a\u00020\u001dJ\u0006\u0010 \u001a\u00020\u001dJ\u000e\u0010!\u001a\u00020\u001d2\u0006\u0010\"\u001a\u00020\u000bJ\u000e\u0010#\u001a\u00020\u001d2\u0006\u0010$\u001a\u00020\u000bR\u0014\u0010\u0007\u001a\b\u0012\u0004\u0012\u00020\t0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0016\u0010\n\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\u000b0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\f\u001a\b\u0012\u0004\u0012\u00020\t0\bX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\r\u001a\b\u0012\u0004\u0012\u00020\t0\u000e\u00a2\u0006\b\n\u0000\u001a\u0004\b\u000f\u0010\u0010R\u001f\u0010\u0011\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\u00120\u000e\u00a2\u0006\u000e\n\u0000\u0012\u0004\b\u0013\u0010\u0014\u001a\u0004\b\u0015\u0010\u0010R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\u0016\u001a\b\u0012\u0004\u0012\u00020\t0\u000e\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0017\u0010\u0010R\u001d\u0010\u0018\u001a\b\u0012\u0004\u0012\u00020\u00190\u000e\u00a2\u0006\u000e\n\u0000\u0012\u0004\b\u001a\u0010\u0014\u001a\u0004\b\u001b\u0010\u0010R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006%"}, d2 = {"Lcom/guzi/storage/ui/detail/DetailViewModel;", "Landroidx/lifecycle/ViewModel;", "itemRepository", "Lcom/guzi/storage/data/repository/ItemRepository;", "transactionRepository", "Lcom/guzi/storage/data/repository/TransactionRepository;", "(Lcom/guzi/storage/data/repository/ItemRepository;Lcom/guzi/storage/data/repository/TransactionRepository;)V", "_deleteComplete", "Lkotlinx/coroutines/flow/MutableStateFlow;", "", "_itemId", "", "_showDeleteDialog", "deleteComplete", "Lkotlinx/coroutines/flow/StateFlow;", "getDeleteComplete", "()Lkotlinx/coroutines/flow/StateFlow;", "item", "Lcom/guzi/storage/domain/model/Item;", "getItem$annotations", "()V", "getItem", "showDeleteDialog", "getShowDeleteDialog", "transactionCount", "", "getTransactionCount$annotations", "getTransactionCount", "clearDeleteComplete", "", "confirmDelete", "dismissDelete", "requestDelete", "setFirstImage", "imagePath", "setItemId", "id", "app_release"})
+@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000V\n\u0002\u0018\u0002\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0018\u0002\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0010\b\n\u0002\b\u0003\n\u0002\u0010\u0002\n\u0002\b\n\b\u0007\u0018\u00002\u00020\u0001B\u001f\b\u0007\u0012\u0006\u0010\u0002\u001a\u00020\u0003\u0012\u0006\u0010\u0004\u001a\u00020\u0005\u0012\u0006\u0010\u0006\u001a\u00020\u0007\u00a2\u0006\u0002\u0010\bJ\u0006\u0010\"\u001a\u00020#J\u0006\u0010$\u001a\u00020#J\u0006\u0010%\u001a\u00020#J\u0006\u0010&\u001a\u00020#J\u0006\u0010\'\u001a\u00020#J\u000e\u0010(\u001a\u00020#2\u0006\u0010)\u001a\u00020\u000fJ\u000e\u0010*\u001a\u00020#2\u0006\u0010)\u001a\u00020\u000fJ\u000e\u0010+\u001a\u00020#2\u0006\u0010,\u001a\u00020\u000fR\u0014\u0010\t\u001a\b\u0012\u0004\u0012\u00020\u000b0\nX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0016\u0010\f\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\r0\nX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0016\u0010\u000e\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\u000f0\nX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u0010\u001a\b\u0012\u0004\u0012\u00020\u000b0\nX\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\u000b0\u0012\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0013\u0010\u0014R\u000e\u0010\u0006\u001a\u00020\u0007X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0019\u0010\u0015\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\r0\u0012\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0016\u0010\u0014R\u001f\u0010\u0017\u001a\n\u0012\u0006\u0012\u0004\u0018\u00010\u00180\u0012\u00a2\u0006\u000e\n\u0000\u0012\u0004\b\u0019\u0010\u001a\u001a\u0004\b\u001b\u0010\u0014R\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\u001c\u001a\b\u0012\u0004\u0012\u00020\u000b0\u0012\u00a2\u0006\b\n\u0000\u001a\u0004\b\u001d\u0010\u0014R\u001d\u0010\u001e\u001a\b\u0012\u0004\u0012\u00020\u001f0\u0012\u00a2\u0006\u000e\n\u0000\u0012\u0004\b \u0010\u001a\u001a\u0004\b!\u0010\u0014R\u000e\u0010\u0004\u001a\u00020\u0005X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006-"}, d2 = {"Lcom/guzi/storage/ui/detail/DetailViewModel;", "Landroidx/lifecycle/ViewModel;", "itemRepository", "Lcom/guzi/storage/data/repository/ItemRepository;", "transactionRepository", "Lcom/guzi/storage/data/repository/TransactionRepository;", "imageExportManager", "Lcom/guzi/storage/util/ImageExportManager;", "(Lcom/guzi/storage/data/repository/ItemRepository;Lcom/guzi/storage/data/repository/TransactionRepository;Lcom/guzi/storage/util/ImageExportManager;)V", "_deleteComplete", "Lkotlinx/coroutines/flow/MutableStateFlow;", "", "_imageSaveResult", "Lcom/guzi/storage/ui/detail/ImageSaveResult;", "_itemId", "", "_showDeleteDialog", "deleteComplete", "Lkotlinx/coroutines/flow/StateFlow;", "getDeleteComplete", "()Lkotlinx/coroutines/flow/StateFlow;", "imageSaveResult", "getImageSaveResult", "item", "Lcom/guzi/storage/domain/model/Item;", "getItem$annotations", "()V", "getItem", "showDeleteDialog", "getShowDeleteDialog", "transactionCount", "", "getTransactionCount$annotations", "getTransactionCount", "clearDeleteComplete", "", "clearImageSaveResult", "confirmDelete", "dismissDelete", "requestDelete", "saveImage", "imagePath", "setFirstImage", "setItemId", "id", "app_release"})
 @dagger.hilt.android.lifecycle.HiltViewModel()
 public final class DetailViewModel extends androidx.lifecycle.ViewModel {
     @org.jetbrains.annotations.NotNull()
     private final com.guzi.storage.data.repository.ItemRepository itemRepository = null;
     @org.jetbrains.annotations.NotNull()
     private final com.guzi.storage.data.repository.TransactionRepository transactionRepository = null;
+    @org.jetbrains.annotations.NotNull()
+    private final com.guzi.storage.util.ImageExportManager imageExportManager = null;
     @org.jetbrains.annotations.NotNull()
     private final kotlinx.coroutines.flow.MutableStateFlow<java.lang.String> _itemId = null;
     @org.jetbrains.annotations.NotNull()
@@ -34,11 +37,16 @@ public final class DetailViewModel extends androidx.lifecycle.ViewModel {
     private final kotlinx.coroutines.flow.MutableStateFlow<java.lang.Boolean> _deleteComplete = null;
     @org.jetbrains.annotations.NotNull()
     private final kotlinx.coroutines.flow.StateFlow<java.lang.Boolean> deleteComplete = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.MutableStateFlow<com.guzi.storage.ui.detail.ImageSaveResult> _imageSaveResult = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.StateFlow<com.guzi.storage.ui.detail.ImageSaveResult> imageSaveResult = null;
     
     @javax.inject.Inject()
     public DetailViewModel(@org.jetbrains.annotations.NotNull()
     com.guzi.storage.data.repository.ItemRepository itemRepository, @org.jetbrains.annotations.NotNull()
-    com.guzi.storage.data.repository.TransactionRepository transactionRepository) {
+    com.guzi.storage.data.repository.TransactionRepository transactionRepository, @org.jetbrains.annotations.NotNull()
+    com.guzi.storage.util.ImageExportManager imageExportManager) {
         super();
     }
     
@@ -72,6 +80,11 @@ public final class DetailViewModel extends androidx.lifecycle.ViewModel {
         return null;
     }
     
+    @org.jetbrains.annotations.NotNull()
+    public final kotlinx.coroutines.flow.StateFlow<com.guzi.storage.ui.detail.ImageSaveResult> getImageSaveResult() {
+        return null;
+    }
+    
     public final void setItemId(@org.jetbrains.annotations.NotNull()
     java.lang.String id) {
     }
@@ -93,5 +106,12 @@ public final class DetailViewModel extends androidx.lifecycle.ViewModel {
      */
     public final void setFirstImage(@org.jetbrains.annotations.NotNull()
     java.lang.String imagePath) {
+    }
+    
+    public final void saveImage(@org.jetbrains.annotations.NotNull()
+    java.lang.String imagePath) {
+    }
+    
+    public final void clearImageSaveResult() {
     }
 }

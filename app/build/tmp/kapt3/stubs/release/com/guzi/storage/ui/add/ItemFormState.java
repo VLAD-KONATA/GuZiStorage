@@ -9,6 +9,8 @@ import com.guzi.storage.domain.model.Item;
 import com.guzi.storage.util.CurrencyUtils;
 import com.guzi.storage.util.DateUtils;
 import com.guzi.storage.util.ImageFileManager;
+import com.guzi.storage.util.ItemValueParser;
+import com.guzi.storage.data.local.PipeListConverter;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import kotlinx.coroutines.flow.StateFlow;
 import com.guzi.storage.util.IdGenerator;
@@ -17,7 +19,7 @@ import javax.inject.Inject;
 /**
  * 表单状态
  */
-@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u00000\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0005\n\u0002\u0010 \n\u0002\b\u0012\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010$\n\u0002\b:\n\u0002\u0010\b\n\u0002\b\u0002\b\u0087\b\u0018\u00002\u00020\u0001B\u00c1\u0002\u0012\b\b\u0002\u0010\u0002\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0004\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0005\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0006\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0007\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\b\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\u000e\b\u0002\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\b\b\u0002\u0010\u000b\u001a\u00020\u0003\u0012\b\b\u0002\u0010\f\u001a\u00020\u0003\u0012\b\b\u0002\u0010\r\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u000e\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u000f\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\u0010\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\u000e\b\u0002\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\u000e\b\u0002\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\u000e\b\u0002\u0010\u0013\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\b\b\u0002\u0010\u0014\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\b\b\u0002\u0010\u0016\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0017\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0018\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\u0019\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\u000e\b\u0002\u0010\u001a\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u0012\b\b\u0002\u0010\u001b\u001a\u00020\u001c\u0012\u0014\b\u0002\u0010\u001d\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\u001e\u00a2\u0006\u0002\u0010\u001fJ\t\u0010<\u001a\u00020\u0003H\u00c6\u0003J\t\u0010=\u001a\u00020\u0003H\u00c6\u0003J\t\u0010>\u001a\u00020\u0003H\u00c6\u0003J\t\u0010?\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010@\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\u000f\u0010A\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\u000f\u0010B\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\u000f\u0010C\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\t\u0010D\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010E\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\t\u0010F\u001a\u00020\u0003H\u00c6\u0003J\t\u0010G\u001a\u00020\u0003H\u00c6\u0003J\t\u0010H\u001a\u00020\u0003H\u00c6\u0003J\t\u0010I\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010J\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\u000f\u0010K\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\t\u0010L\u001a\u00020\u001cH\u00c6\u0003J\u0015\u0010M\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\u001eH\u00c6\u0003J\t\u0010N\u001a\u00020\u0003H\u00c6\u0003J\t\u0010O\u001a\u00020\u0003H\u00c6\u0003J\t\u0010P\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010Q\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\u000f\u0010R\u001a\b\u0012\u0004\u0012\u00020\u00030\tH\u00c6\u0003J\t\u0010S\u001a\u00020\u0003H\u00c6\u0003J\t\u0010T\u001a\u00020\u0003H\u00c6\u0003J\u00c5\u0002\u0010U\u001a\u00020\u00002\b\b\u0002\u0010\u0002\u001a\u00020\u00032\b\b\u0002\u0010\u0004\u001a\u00020\u00032\b\b\u0002\u0010\u0005\u001a\u00020\u00032\b\b\u0002\u0010\u0006\u001a\u00020\u00032\b\b\u0002\u0010\u0007\u001a\u00020\u00032\u000e\b\u0002\u0010\b\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\u000e\b\u0002\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\b\b\u0002\u0010\u000b\u001a\u00020\u00032\b\b\u0002\u0010\f\u001a\u00020\u00032\b\b\u0002\u0010\r\u001a\u00020\u00032\b\b\u0002\u0010\u000e\u001a\u00020\u00032\b\b\u0002\u0010\u000f\u001a\u00020\u00032\u000e\b\u0002\u0010\u0010\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\u000e\b\u0002\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\u000e\b\u0002\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\u000e\b\u0002\u0010\u0013\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\b\b\u0002\u0010\u0014\u001a\u00020\u00032\u000e\b\u0002\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\b\b\u0002\u0010\u0016\u001a\u00020\u00032\b\b\u0002\u0010\u0017\u001a\u00020\u00032\b\b\u0002\u0010\u0018\u001a\u00020\u00032\u000e\b\u0002\u0010\u0019\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\u000e\b\u0002\u0010\u001a\u001a\b\u0012\u0004\u0012\u00020\u00030\t2\b\b\u0002\u0010\u001b\u001a\u00020\u001c2\u0014\b\u0002\u0010\u001d\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\u001eH\u00c6\u0001J\u0013\u0010V\u001a\u00020\u001c2\b\u0010W\u001a\u0004\u0018\u00010\u0001H\u00d6\u0003J\t\u0010X\u001a\u00020YH\u00d6\u0001J\t\u0010Z\u001a\u00020\u0003H\u00d6\u0001R\u0017\u0010\u0013\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b \u0010!R\u0011\u0010\u000f\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b\"\u0010#R\u0017\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b$\u0010!R\u0011\u0010\r\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b%\u0010#R\u0017\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b&\u0010!R\u0017\u0010\u0019\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b\'\u0010!R\u0011\u0010\u0006\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b(\u0010#R\u0011\u0010\u001b\u001a\u00020\u001c\u00a2\u0006\b\n\u0000\u001a\u0004\b\u001b\u0010)R\u0011\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b*\u0010#R\u0017\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b+\u0010!R\u0011\u0010\u0004\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b,\u0010#R\u0011\u0010\u0005\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b-\u0010#R\u0011\u0010\u0018\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b.\u0010#R\u0017\u0010\b\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b/\u0010!R\u0017\u0010\u001a\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b0\u0010!R\u0011\u0010\f\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b1\u0010#R\u0011\u0010\u0007\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b2\u0010#R\u0011\u0010\u0017\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b3\u0010#R\u0011\u0010\u000e\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b4\u0010#R\u0017\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b5\u0010!R\u0011\u0010\u000b\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b6\u0010#R\u0017\u0010\u0010\u001a\b\u0012\u0004\u0012\u00020\u00030\t\u00a2\u0006\b\n\u0000\u001a\u0004\b7\u0010!R\u0011\u0010\u0014\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b8\u0010#R\u001d\u0010\u001d\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\u001e\u00a2\u0006\b\n\u0000\u001a\u0004\b9\u0010:R\u0011\u0010\u0016\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b;\u0010#\u00a8\u0006["}, d2 = {"Lcom/guzi/storage/ui/add/ItemFormState;", "", "itemId", "", "nameCn", "nameEn", "ipName", "producer", "originPlaces", "", "saleFormat", "sellMethod", "price", "currency", "releaseDate", "category", "sizes", "materials", "characters", "artTypes", "status", "damageDetails", "version", "quantity", "note", "imagePaths", "pendingDeleteImagePaths", "isEditMode", "", "validationErrors", "", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;ZLjava/util/Map;)V", "getArtTypes", "()Ljava/util/List;", "getCategory", "()Ljava/lang/String;", "getCharacters", "getCurrency", "getDamageDetails", "getImagePaths", "getIpName", "()Z", "getItemId", "getMaterials", "getNameCn", "getNameEn", "getNote", "getOriginPlaces", "getPendingDeleteImagePaths", "getPrice", "getProducer", "getQuantity", "getReleaseDate", "getSaleFormat", "getSellMethod", "getSizes", "getStatus", "getValidationErrors", "()Ljava/util/Map;", "getVersion", "component1", "component10", "component11", "component12", "component13", "component14", "component15", "component16", "component17", "component18", "component19", "component2", "component20", "component21", "component22", "component23", "component24", "component25", "component3", "component4", "component5", "component6", "component7", "component8", "component9", "copy", "equals", "other", "hashCode", "", "toString", "app_release"})
+@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u00002\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0010\u000e\n\u0002\b\u0003\n\u0002\u0010 \n\u0002\b\u0007\n\u0002\u0010\u000b\n\u0002\b\u0012\n\u0002\u0010$\n\u0002\b@\n\u0002\u0010\b\n\u0002\b\u0002\b\u0087\b\u0018\u00002\u00020\u0001B\u0081\u0003\u0012\b\b\u0002\u0010\u0002\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0004\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0005\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\u0006\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\b\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\t\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\b\b\u0002\u0010\u000b\u001a\u00020\u0003\u0012\b\b\u0002\u0010\f\u001a\u00020\u0003\u0012\b\b\u0002\u0010\r\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u000e\u001a\u00020\u000f\u0012\b\b\u0002\u0010\u0010\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\u0013\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\u0014\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\b\b\u0002\u0010\u0016\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\u0017\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\b\b\u0002\u0010\u0018\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u0019\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u001a\u001a\u00020\u0003\u0012\b\b\u0002\u0010\u001b\u001a\u00020\u000f\u0012\b\b\u0002\u0010\u001c\u001a\u00020\u0003\u0012\u000e\b\u0002\u0010\u001d\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\u001e\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\u000e\b\u0002\u0010\u001f\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u0012\b\b\u0002\u0010 \u001a\u00020\u000f\u0012\u0014\b\u0002\u0010!\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\"\u00a2\u0006\u0002\u0010#J\t\u0010B\u001a\u00020\u0003H\u00c6\u0003J\t\u0010C\u001a\u00020\u0003H\u00c6\u0003J\t\u0010D\u001a\u00020\u000fH\u00c6\u0003J\t\u0010E\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010F\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010G\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010H\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010I\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010J\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\t\u0010K\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010L\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\t\u0010M\u001a\u00020\u0003H\u00c6\u0003J\t\u0010N\u001a\u00020\u0003H\u00c6\u0003J\t\u0010O\u001a\u00020\u0003H\u00c6\u0003J\t\u0010P\u001a\u00020\u0003H\u00c6\u0003J\t\u0010Q\u001a\u00020\u000fH\u00c6\u0003J\t\u0010R\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010S\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010T\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010U\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\t\u0010V\u001a\u00020\u000fH\u00c6\u0003J\u0015\u0010W\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\"H\u00c6\u0003J\t\u0010X\u001a\u00020\u0003H\u00c6\u0003J\u000f\u0010Y\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010Z\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010[\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\u000f\u0010\\\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007H\u00c6\u0003J\t\u0010]\u001a\u00020\u0003H\u00c6\u0003J\t\u0010^\u001a\u00020\u0003H\u00c6\u0003J\u0085\u0003\u0010_\u001a\u00020\u00002\b\b\u0002\u0010\u0002\u001a\u00020\u00032\b\b\u0002\u0010\u0004\u001a\u00020\u00032\b\b\u0002\u0010\u0005\u001a\u00020\u00032\u000e\b\u0002\u0010\u0006\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\b\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\t\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\b\b\u0002\u0010\u000b\u001a\u00020\u00032\b\b\u0002\u0010\f\u001a\u00020\u00032\b\b\u0002\u0010\r\u001a\u00020\u00032\b\b\u0002\u0010\u000e\u001a\u00020\u000f2\b\b\u0002\u0010\u0010\u001a\u00020\u00032\u000e\b\u0002\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\u0013\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\u0014\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\b\b\u0002\u0010\u0016\u001a\u00020\u00032\u000e\b\u0002\u0010\u0017\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\b\b\u0002\u0010\u0018\u001a\u00020\u00032\b\b\u0002\u0010\u0019\u001a\u00020\u00032\b\b\u0002\u0010\u001a\u001a\u00020\u00032\b\b\u0002\u0010\u001b\u001a\u00020\u000f2\b\b\u0002\u0010\u001c\u001a\u00020\u00032\u000e\b\u0002\u0010\u001d\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\u001e\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\u000e\b\u0002\u0010\u001f\u001a\b\u0012\u0004\u0012\u00020\u00030\u00072\b\b\u0002\u0010 \u001a\u00020\u000f2\u0014\b\u0002\u0010!\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\"H\u00c6\u0001J\u0013\u0010`\u001a\u00020\u000f2\b\u0010a\u001a\u0004\u0018\u00010\u0001H\u00d6\u0003J\t\u0010b\u001a\u00020cH\u00d6\u0001J\t\u0010d\u001a\u00020\u0003H\u00d6\u0001R\u0017\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b$\u0010%R\u0017\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b&\u0010%R\u0017\u0010\u0014\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b\'\u0010%R\u0011\u0010\r\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b(\u0010)R\u0017\u0010\u0017\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b*\u0010%R\u0017\u0010\u001d\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b+\u0010%R\u0017\u0010\u0006\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b,\u0010%R\u0011\u0010 \u001a\u00020\u000f\u00a2\u0006\b\n\u0000\u001a\u0004\b \u0010-R\u0011\u0010\u000e\u001a\u00020\u000f\u00a2\u0006\b\n\u0000\u001a\u0004\b\u000e\u0010-R\u0011\u0010\u001b\u001a\u00020\u000f\u00a2\u0006\b\n\u0000\u001a\u0004\b\u001b\u0010-R\u0011\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b.\u0010)R\u0017\u0010\u0013\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b/\u0010%R\u0011\u0010\u0004\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b0\u0010)R\u0011\u0010\u0005\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b1\u0010)R\u0011\u0010\u001c\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b2\u0010)R\u0017\u0010\t\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b3\u0010%R\u0011\u0010\u001a\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b4\u0010)R\u0017\u0010\u001f\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b5\u0010%R\u0011\u0010\f\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b6\u0010)R\u0017\u0010\b\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b7\u0010%R\u0011\u0010\u0019\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b8\u0010)R\u0017\u0010\u001e\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b9\u0010%R\u0011\u0010\u0010\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b:\u0010)R\u0017\u0010\n\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b;\u0010%R\u0011\u0010\u000b\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b<\u0010)R\u0017\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\u00030\u0007\u00a2\u0006\b\n\u0000\u001a\u0004\b=\u0010%R\u0011\u0010\u0016\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\b>\u0010)R\u001d\u0010!\u001a\u000e\u0012\u0004\u0012\u00020\u0003\u0012\u0004\u0012\u00020\u00030\"\u00a2\u0006\b\n\u0000\u001a\u0004\b?\u0010@R\u0011\u0010\u0018\u001a\u00020\u0003\u00a2\u0006\b\n\u0000\u001a\u0004\bA\u0010)\u00a8\u0006e"}, d2 = {"Lcom/guzi/storage/ui/add/ItemFormState;", "", "itemId", "", "nameCn", "nameEn", "ipNames", "", "producers", "originPlaces", "saleFormat", "sellMethod", "price", "currency", "isNoPrice", "", "releaseDate", "categories", "sizes", "materials", "characters", "artTypes", "status", "damageDetails", "version", "quantity", "originalBagQuantity", "isOriginalBagUnknown", "note", "imagePaths", "referenceLinks", "pendingDeleteImagePaths", "isEditMode", "validationErrors", "", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/util/List;Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZLjava/lang/String;Ljava/util/List;Ljava/util/List;Ljava/util/List;ZLjava/util/Map;)V", "getArtTypes", "()Ljava/util/List;", "getCategories", "getCharacters", "getCurrency", "()Ljava/lang/String;", "getDamageDetails", "getImagePaths", "getIpNames", "()Z", "getItemId", "getMaterials", "getNameCn", "getNameEn", "getNote", "getOriginPlaces", "getOriginalBagQuantity", "getPendingDeleteImagePaths", "getPrice", "getProducers", "getQuantity", "getReferenceLinks", "getReleaseDate", "getSaleFormat", "getSellMethod", "getSizes", "getStatus", "getValidationErrors", "()Ljava/util/Map;", "getVersion", "component1", "component10", "component11", "component12", "component13", "component14", "component15", "component16", "component17", "component18", "component19", "component2", "component20", "component21", "component22", "component23", "component24", "component25", "component26", "component27", "component28", "component29", "component3", "component4", "component5", "component6", "component7", "component8", "component9", "copy", "equals", "other", "hashCode", "", "toString", "app_release"})
 public final class ItemFormState {
     @org.jetbrains.annotations.NotNull()
     private final java.lang.String itemId = null;
@@ -26,9 +28,9 @@ public final class ItemFormState {
     @org.jetbrains.annotations.NotNull()
     private final java.lang.String nameEn = null;
     @org.jetbrains.annotations.NotNull()
-    private final java.lang.String ipName = null;
+    private final java.util.List<java.lang.String> ipNames = null;
     @org.jetbrains.annotations.NotNull()
-    private final java.lang.String producer = null;
+    private final java.util.List<java.lang.String> producers = null;
     @org.jetbrains.annotations.NotNull()
     private final java.util.List<java.lang.String> originPlaces = null;
     @org.jetbrains.annotations.NotNull()
@@ -39,10 +41,11 @@ public final class ItemFormState {
     private final java.lang.String price = null;
     @org.jetbrains.annotations.NotNull()
     private final java.lang.String currency = null;
+    private final boolean isNoPrice = false;
     @org.jetbrains.annotations.NotNull()
     private final java.lang.String releaseDate = null;
     @org.jetbrains.annotations.NotNull()
-    private final java.lang.String category = null;
+    private final java.util.List<java.lang.String> categories = null;
     @org.jetbrains.annotations.NotNull()
     private final java.util.List<java.lang.String> sizes = null;
     @org.jetbrains.annotations.NotNull()
@@ -60,9 +63,14 @@ public final class ItemFormState {
     @org.jetbrains.annotations.NotNull()
     private final java.lang.String quantity = null;
     @org.jetbrains.annotations.NotNull()
+    private final java.lang.String originalBagQuantity = null;
+    private final boolean isOriginalBagUnknown = false;
+    @org.jetbrains.annotations.NotNull()
     private final java.lang.String note = null;
     @org.jetbrains.annotations.NotNull()
     private final java.util.List<java.lang.String> imagePaths = null;
+    @org.jetbrains.annotations.NotNull()
+    private final java.util.List<java.lang.String> referenceLinks = null;
     @org.jetbrains.annotations.NotNull()
     private final java.util.List<java.lang.String> pendingDeleteImagePaths = null;
     private final boolean isEditMode = false;
@@ -73,15 +81,15 @@ public final class ItemFormState {
     java.lang.String itemId, @org.jetbrains.annotations.NotNull()
     java.lang.String nameCn, @org.jetbrains.annotations.NotNull()
     java.lang.String nameEn, @org.jetbrains.annotations.NotNull()
-    java.lang.String ipName, @org.jetbrains.annotations.NotNull()
-    java.lang.String producer, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> ipNames, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> producers, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> originPlaces, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> saleFormat, @org.jetbrains.annotations.NotNull()
     java.lang.String sellMethod, @org.jetbrains.annotations.NotNull()
     java.lang.String price, @org.jetbrains.annotations.NotNull()
-    java.lang.String currency, @org.jetbrains.annotations.NotNull()
+    java.lang.String currency, boolean isNoPrice, @org.jetbrains.annotations.NotNull()
     java.lang.String releaseDate, @org.jetbrains.annotations.NotNull()
-    java.lang.String category, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> categories, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> sizes, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> materials, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> characters, @org.jetbrains.annotations.NotNull()
@@ -90,8 +98,10 @@ public final class ItemFormState {
     java.util.List<java.lang.String> damageDetails, @org.jetbrains.annotations.NotNull()
     java.lang.String version, @org.jetbrains.annotations.NotNull()
     java.lang.String quantity, @org.jetbrains.annotations.NotNull()
+    java.lang.String originalBagQuantity, boolean isOriginalBagUnknown, @org.jetbrains.annotations.NotNull()
     java.lang.String note, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> imagePaths, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> referenceLinks, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> pendingDeleteImagePaths, boolean isEditMode, @org.jetbrains.annotations.NotNull()
     java.util.Map<java.lang.String, java.lang.String> validationErrors) {
         super();
@@ -113,12 +123,12 @@ public final class ItemFormState {
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.lang.String getIpName() {
+    public final java.util.List<java.lang.String> getIpNames() {
         return null;
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.lang.String getProducer() {
+    public final java.util.List<java.lang.String> getProducers() {
         return null;
     }
     
@@ -147,13 +157,17 @@ public final class ItemFormState {
         return null;
     }
     
+    public final boolean isNoPrice() {
+        return false;
+    }
+    
     @org.jetbrains.annotations.NotNull()
     public final java.lang.String getReleaseDate() {
         return null;
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.lang.String getCategory() {
+    public final java.util.List<java.lang.String> getCategories() {
         return null;
     }
     
@@ -198,12 +212,26 @@ public final class ItemFormState {
     }
     
     @org.jetbrains.annotations.NotNull()
+    public final java.lang.String getOriginalBagQuantity() {
+        return null;
+    }
+    
+    public final boolean isOriginalBagUnknown() {
+        return false;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
     public final java.lang.String getNote() {
         return null;
     }
     
     @org.jetbrains.annotations.NotNull()
     public final java.util.List<java.lang.String> getImagePaths() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.util.List<java.lang.String> getReferenceLinks() {
         return null;
     }
     
@@ -235,9 +263,8 @@ public final class ItemFormState {
         return null;
     }
     
-    @org.jetbrains.annotations.NotNull()
-    public final java.lang.String component11() {
-        return null;
+    public final boolean component11() {
+        return false;
     }
     
     @org.jetbrains.annotations.NotNull()
@@ -266,17 +293,17 @@ public final class ItemFormState {
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.lang.String component17() {
+    public final java.util.List<java.lang.String> component17() {
         return null;
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.util.List<java.lang.String> component18() {
+    public final java.lang.String component18() {
         return null;
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.lang.String component19() {
+    public final java.util.List<java.lang.String> component19() {
         return null;
     }
     
@@ -296,21 +323,40 @@ public final class ItemFormState {
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.util.List<java.lang.String> component22() {
+    public final java.lang.String component22() {
         return null;
     }
     
-    @org.jetbrains.annotations.NotNull()
-    public final java.util.List<java.lang.String> component23() {
-        return null;
-    }
-    
-    public final boolean component24() {
+    public final boolean component23() {
         return false;
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.util.Map<java.lang.String, java.lang.String> component25() {
+    public final java.lang.String component24() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.util.List<java.lang.String> component25() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.util.List<java.lang.String> component26() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.util.List<java.lang.String> component27() {
+        return null;
+    }
+    
+    public final boolean component28() {
+        return false;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.util.Map<java.lang.String, java.lang.String> component29() {
         return null;
     }
     
@@ -320,12 +366,12 @@ public final class ItemFormState {
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.lang.String component4() {
+    public final java.util.List<java.lang.String> component4() {
         return null;
     }
     
     @org.jetbrains.annotations.NotNull()
-    public final java.lang.String component5() {
+    public final java.util.List<java.lang.String> component5() {
         return null;
     }
     
@@ -354,15 +400,15 @@ public final class ItemFormState {
     java.lang.String itemId, @org.jetbrains.annotations.NotNull()
     java.lang.String nameCn, @org.jetbrains.annotations.NotNull()
     java.lang.String nameEn, @org.jetbrains.annotations.NotNull()
-    java.lang.String ipName, @org.jetbrains.annotations.NotNull()
-    java.lang.String producer, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> ipNames, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> producers, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> originPlaces, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> saleFormat, @org.jetbrains.annotations.NotNull()
     java.lang.String sellMethod, @org.jetbrains.annotations.NotNull()
     java.lang.String price, @org.jetbrains.annotations.NotNull()
-    java.lang.String currency, @org.jetbrains.annotations.NotNull()
+    java.lang.String currency, boolean isNoPrice, @org.jetbrains.annotations.NotNull()
     java.lang.String releaseDate, @org.jetbrains.annotations.NotNull()
-    java.lang.String category, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> categories, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> sizes, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> materials, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> characters, @org.jetbrains.annotations.NotNull()
@@ -371,8 +417,10 @@ public final class ItemFormState {
     java.util.List<java.lang.String> damageDetails, @org.jetbrains.annotations.NotNull()
     java.lang.String version, @org.jetbrains.annotations.NotNull()
     java.lang.String quantity, @org.jetbrains.annotations.NotNull()
+    java.lang.String originalBagQuantity, boolean isOriginalBagUnknown, @org.jetbrains.annotations.NotNull()
     java.lang.String note, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> imagePaths, @org.jetbrains.annotations.NotNull()
+    java.util.List<java.lang.String> referenceLinks, @org.jetbrains.annotations.NotNull()
     java.util.List<java.lang.String> pendingDeleteImagePaths, boolean isEditMode, @org.jetbrains.annotations.NotNull()
     java.util.Map<java.lang.String, java.lang.String> validationErrors) {
         return null;

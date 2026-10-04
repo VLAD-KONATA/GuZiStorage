@@ -8,7 +8,6 @@ val GROUPABLE_ATTRIBUTES = listOf(
     "producer" to "出品商",
     "category" to "种类",
     "status" to "状态",
-    "version" to "版本",
     "release_date" to "发售日期",
     "sell_method" to "售卖方式",
     "characters" to "相关角色",

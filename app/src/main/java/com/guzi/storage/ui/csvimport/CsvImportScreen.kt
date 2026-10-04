@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
@@ -145,7 +146,7 @@ private fun IdleContent(onSelectFile: () -> Unit) {
         )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "CSV 文件需包含以下列（表头行）：\n中文名称、IP名、发售形式、售卖方式、相关角色、柄图种类（必填）\n其他字段可选，一对多字段用 | 分隔",
+            text = "CSV 文件需包含以下必填列（表头行）：\n中文名称、IP名、相关角色、柄图种类\n其他字段可选，一对多字段用 | 分隔",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -202,9 +203,9 @@ private fun PreviewContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                items(items.take(20)) { item ->
+                items(items.take(20), key = { it.id }) { item ->
                     Text(
-                        text = "• ${item.displayName}（${item.ipName}）",
+                        text = "• ${item.displayName}（${item.ipNames.joinToString("、")}）",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
@@ -231,7 +232,7 @@ private fun PreviewContent(
                         color = MaterialTheme.colorScheme.error
                     )
                 }
-                items(errorLines) { error ->
+                itemsIndexed(errorLines, key = { index, error -> "$index:$error" }) { _, error ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.padding(vertical = 2.dp)

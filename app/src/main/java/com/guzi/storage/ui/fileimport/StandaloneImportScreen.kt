@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
@@ -34,11 +35,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +57,7 @@ fun StandaloneImportScreen(
     viewModel: StandaloneImportViewModel = hiltViewModel()
 ) {
     val importState by viewModel.importState.collectAsState()
+    var smartCompressImages by rememberSaveable { mutableStateOf(false) }
     val title = when (viewModel.importType) {
         StandaloneImportType.ITEMS_CSV -> "导入物品 CSV"
         StandaloneImportType.TRANSACTIONS_CSV -> "导入交易记录 CSV"
@@ -104,7 +110,9 @@ fun StandaloneImportScreen(
                     PreviewContent(
                         importType = viewModel.importType,
                         data = state.data,
-                        onConfirm = viewModel::confirmImport,
+                        smartCompressImages = smartCompressImages,
+                        onSmartCompressChange = { smartCompressImages = it },
+                        onConfirm = { viewModel.confirmImport(smartCompressImages) },
                         onCancel = viewModel::reset
                     )
                 }
@@ -143,7 +151,7 @@ private fun IdleContent(
     val (title, desc) = when (importType) {
         StandaloneImportType.ITEMS_CSV -> Pair(
             "选择 items.csv 文件导入",
-            "CSV 列：id,中文名称,IP名,发售形式,售卖方式,\n相关角色,柄图种类,发售日期,状态...\n（一对多用 | 分隔）\n\n必填：中文名称、IP名、发售形式、\n售卖方式、相关角色、柄图种类\n\n导入时自动按 13 个字段去重，\n重复物品仅累加数量"
+            "CSV 列：id,中文名称,IP名,发售形式,售卖方式,\n相关角色,柄图种类,发售日期,原袋,参考链接...\n（一对多用 | 分隔）\n\n必填：中文名称、IP名、相关角色、柄图种类\n\n导入时自动按物品属性去重，\n重复物品会合并数量"
         )
         StandaloneImportType.TRANSACTIONS_CSV -> Pair(
             "选择 transactions.csv 文件导入",
@@ -188,6 +196,8 @@ private fun IdleContent(
 private fun PreviewContent(
     importType: StandaloneImportType,
     data: StandalonePreviewData,
+    smartCompressImages: Boolean,
+    onSmartCompressChange: (Boolean) -> Unit,
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -245,9 +255,9 @@ private fun PreviewContent(
                 is StandalonePreviewData.ItemsPreview -> {
                     if (data.items.isNotEmpty()) {
                         item { Text("物品记录（前 20 条预览）：", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                        items(data.items.take(20)) { parsed ->
+                        items(data.items.take(20), key = { "${it.tempId}:${it.item.id}" }) { parsed ->
                             val item = parsed.item
-                            Text("• ${item.nameCn}（${item.ipName}）×${item.quantity}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 2.dp))
+                            Text("• ${item.nameCn}（${item.ipNames.joinToString("、")}）×${item.quantity}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 2.dp))
                         }
                         if (data.items.size > 20) {
                             item { Text("...及另外 ${data.items.size - 20} 条", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant) }
@@ -257,7 +267,7 @@ private fun PreviewContent(
                 is StandalonePreviewData.TransactionsPreview -> {
                     if (data.transactions.isNotEmpty()) {
                         item { Text("交易记录（前 20 条预览）：", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                        items(data.transactions.take(20)) { t ->
+                        items(data.transactions.take(20), key = { it.id }) { t ->
                             Text("• ${t.type.value} ${t.nameCn} ¥${t.price} ×${t.quantity}", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 2.dp))
                         }
                         if (data.transactions.size > 20) {
@@ -268,7 +278,7 @@ private fun PreviewContent(
                 is StandalonePreviewData.ImagesPreview -> {
                     if (data.groups.isNotEmpty()) {
                         item { Text("图片分组（前 20 条预览）：", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant) }
-                        items(data.groups.take(20)) { group ->
+                        items(data.groups.take(20), key = { it.itemId }) { group ->
                             Text("• 物品 ${group.itemId.take(8)}...：${group.imageFiles.size} 张图片", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(vertical = 2.dp))
                         }
                     }
@@ -283,7 +293,7 @@ private fun PreviewContent(
                     Spacer(Modifier.height(8.dp))
                     Text("警告信息：", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
                 }
-                items(data.errors) { error ->
+                itemsIndexed(data.errors, key = { index, error -> "$index:$error" }) { _, error ->
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.padding(vertical = 2.dp)) {
                         Icon(Icons.Default.Warning, contentDescription = null, modifier = Modifier.size(14.dp), tint = MaterialTheme.colorScheme.error)
                         Text(error, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
@@ -292,19 +302,33 @@ private fun PreviewContent(
             }
         }
 
-        // 底部操作按钮
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text("取消") }
-            Button(onClick = onConfirm, modifier = Modifier.weight(1f)) {
-                val confirmText = when (data) {
-                    is StandalonePreviewData.ItemsPreview -> "确认导入 ${data.items.size} 条"
-                    is StandalonePreviewData.TransactionsPreview -> "确认导入 ${data.transactions.size} 条"
-                    is StandalonePreviewData.ImagesPreview -> "确认导入 ${data.groups.sumOf { it.imageFiles.size }} 张"
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            if (importType == StandaloneImportType.IMAGE_ZIP) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("智能压缩大图", style = MaterialTheme.typography.bodyMedium)
+                    Switch(
+                        checked = smartCompressImages,
+                        onCheckedChange = onSmartCompressChange
+                    )
                 }
-                Text(confirmText)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text("取消") }
+                Button(onClick = onConfirm, modifier = Modifier.weight(1f)) {
+                    val confirmText = when (data) {
+                        is StandalonePreviewData.ItemsPreview -> "确认导入 ${data.items.size} 条"
+                        is StandalonePreviewData.TransactionsPreview -> "确认导入 ${data.transactions.size} 条"
+                        is StandalonePreviewData.ImagesPreview -> "确认导入 ${data.groups.sumOf { it.imageFiles.size }} 张"
+                    }
+                    Text(confirmText)
+                }
             }
         }
     }

@@ -3,6 +3,7 @@ package com.guzi.storage.data.repository
 import com.guzi.storage.data.local.dao.ItemDao
 import com.guzi.storage.data.local.dao.ItemDao.IpGroupInfo
 import com.guzi.storage.domain.model.Item
+import com.guzi.storage.util.ImageFileManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -15,7 +16,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class ItemRepository @Inject constructor(
-    private val itemDao: ItemDao
+    private val itemDao: ItemDao,
+    private val imageFileManager: ImageFileManager
 ) {
 
     // ===== 查询 =====
@@ -72,10 +74,12 @@ class ItemRepository @Inject constructor(
     suspend fun deleteItem(id: String) {
         val entity = itemDao.getById(id) ?: return
         itemDao.delete(entity)
+        imageFileManager.deleteItemImages(id)
     }
 
     suspend fun deleteItems(ids: List<String>) {
         itemDao.deleteByIds(ids)
+        ids.forEach { imageFileManager.deleteItemImages(it) }
     }
 
     suspend fun getItemCount(): Int = itemDao.count()

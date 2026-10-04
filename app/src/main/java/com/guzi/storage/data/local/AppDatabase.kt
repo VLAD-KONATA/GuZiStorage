@@ -24,6 +24,12 @@ import com.guzi.storage.data.local.entity.TransactionEntity
  * 版本 3: price 列类型变更 Double → String (格式: 金额+货币代码, 如 "550y")
  * - items 表 price 字段改为 TEXT 存储
  * - 使用 fallbackToDestructiveMigration，自动重建
+ *
+ * 版本 4: 新增 original_bag_quantity / reference_links
+ * - 使用 fallbackToDestructiveMigration，自动重建
+ *
+ * 版本 5: sell_method / sale_format 改为可空
+ * - 使用 fallbackToDestructiveMigration，自动重建
  */
 @Database(
     entities = [
@@ -31,7 +37,7 @@ import com.guzi.storage.data.local.entity.TransactionEntity
         TransactionEntity::class,
         PresetOptionEntity::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.Flow;
 @androidx.room.Dao()
 public abstract interface ItemDao {
     
-    @androidx.room.Query(value = "SELECT * FROM items ORDER BY updated_at DESC")
+    @androidx.room.Query(value = "SELECT * FROM items ORDER BY created_at DESC")
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.entity.ItemEntity>> getAll();
     
@@ -35,17 +35,17 @@ public abstract interface ItemDao {
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.dao.ItemDao.IpGroupInfo>> getIpGroups();
     
-    @androidx.room.Query(value = "SELECT * FROM items WHERE ip_name = :ipName ORDER BY updated_at DESC")
+    @androidx.room.Query(value = "\n        SELECT * FROM items\n        WHERE ip_name = :ipName\n           OR ip_name LIKE :ipName || \'|%\'\n           OR ip_name LIKE \'%|\' || :ipName\n           OR ip_name LIKE \'%|\' || :ipName || \'|%\'\n        ORDER BY created_at DESC\n    ")
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.entity.ItemEntity>> getItemsByIp(@org.jetbrains.annotations.NotNull()
     java.lang.String ipName);
     
-    @androidx.room.Query(value = "SELECT * FROM items WHERE category = :category ORDER BY updated_at DESC")
+    @androidx.room.Query(value = "\n        SELECT * FROM items\n        WHERE category = :category\n           OR category LIKE :category || \'|%\'\n           OR category LIKE \'%|\' || :category\n           OR category LIKE \'%|\' || :category || \'|%\'\n        ORDER BY created_at DESC\n    ")
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.entity.ItemEntity>> getItemsByCategory(@org.jetbrains.annotations.NotNull()
     java.lang.String category);
     
-    @androidx.room.Query(value = "SELECT * FROM items WHERE producer = :producer ORDER BY updated_at DESC")
+    @androidx.room.Query(value = "\n        SELECT * FROM items\n        WHERE producer = :producer\n           OR producer LIKE :producer || \'|%\'\n           OR producer LIKE \'%|\' || :producer\n           OR producer LIKE \'%|\' || :producer || \'|%\'\n        ORDER BY created_at DESC\n    ")
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.entity.ItemEntity>> getItemsByProducer(@org.jetbrains.annotations.NotNull()
     java.lang.String producer);
@@ -53,7 +53,7 @@ public abstract interface ItemDao {
     /**
      * 关键词搜索（中文名、IP名、日文名模糊匹配）
      */
-    @androidx.room.Query(value = "\n        SELECT * FROM items \n        WHERE name_cn LIKE \'%\' || :keyword || \'%\' \n           OR ip_name LIKE \'%\' || :keyword || \'%\' \n           OR name_en LIKE \'%\' || :keyword || \'%\'\n        ORDER BY updated_at DESC\n    ")
+    @androidx.room.Query(value = "\n        SELECT * FROM items \n        WHERE name_cn LIKE \'%\' || :keyword || \'%\' \n           OR ip_name LIKE \'%\' || :keyword || \'%\' \n           OR name_en LIKE \'%\' || :keyword || \'%\'\n        ORDER BY created_at DESC\n    ")
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.entity.ItemEntity>> search(@org.jetbrains.annotations.NotNull()
     java.lang.String keyword);
@@ -61,7 +61,7 @@ public abstract interface ItemDao {
     /**
      * 按角色筛选（管道符分隔的 characters 列模糊匹配）
      */
-    @androidx.room.Query(value = "SELECT * FROM items WHERE characters LIKE \'%\' || :character || \'%\' ORDER BY updated_at DESC")
+    @androidx.room.Query(value = "SELECT * FROM items WHERE characters LIKE \'%\' || :character || \'%\' ORDER BY created_at DESC")
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.entity.ItemEntity>> getItemsByCharacter(@org.jetbrains.annotations.NotNull()
     java.lang.String character);
@@ -69,7 +69,7 @@ public abstract interface ItemDao {
     /**
      * 按种类筛选
      */
-    @androidx.room.Query(value = "SELECT * FROM items WHERE category = :category ORDER BY updated_at DESC")
+    @androidx.room.Query(value = "\n        SELECT * FROM items\n        WHERE category = :category\n           OR category LIKE :category || \'|%\'\n           OR category LIKE \'%|\' || :category\n           OR category LIKE \'%|\' || :category || \'|%\'\n        ORDER BY created_at DESC\n    ")
     @org.jetbrains.annotations.NotNull()
     public abstract kotlinx.coroutines.flow.Flow<java.util.List<com.guzi.storage.data.local.entity.ItemEntity>> getItemsByCategoryExact(@org.jetbrains.annotations.NotNull()
     java.lang.String category);

@@ -14,13 +14,14 @@ data class Item(
     val nameEn: String? = null,
     val ipName: String,
     val producer: String? = null,
-    val sellMethod: String,
+    val sellMethod: String? = null,
     val price: String? = null,
     val category: String? = null,
     val releaseDate: String? = null,
     val version: String? = null,
     val status: String = "无伤",
     val quantity: Int = 1,
+    val originalBagQuantity: Int? = null,
     val note: String? = null,
     val originPlaces: List<String> = emptyList(),
     val saleFormat: List<String> = emptyList(),
@@ -30,10 +31,20 @@ data class Item(
     val artTypes: List<String> = emptyList(),
     val damageDetails: List<String> = emptyList(),
     val imagePaths: List<String> = emptyList(),
+    val referenceLinks: List<String> = emptyList(),
     val extraAttributes: Map<String, Any> = emptyMap(),
     val createdAt: Long = 0,
     val updatedAt: Long = 0
 ) {
+    val ipNames: List<String>
+        get() = PipeListConverter.toList(ipName)
+
+    val producers: List<String>
+        get() = PipeListConverter.toList(producer ?: "")
+
+    val categories: List<String>
+        get() = PipeListConverter.toList(category ?: "")
+
     /**
      * 显示名称：
      * - 再贩版本在前加（再贩）前缀，初贩不标注
@@ -64,15 +75,17 @@ data class Item(
         version = version,
         status = status,
         quantity = quantity,
+        originalBagQuantity = originalBagQuantity,
         note = note,
         originPlaces = PipeListConverter.fromList(originPlaces),
-        saleFormat = PipeListConverter.fromList(saleFormat),
+        saleFormat = PipeListConverter.fromList(saleFormat).ifBlank { null },
         sizes = PipeListConverter.fromList(sizes),
         materials = PipeListConverter.fromList(materials),
         characters = PipeListConverter.fromList(characters),
         artTypes = PipeListConverter.fromList(artTypes),
         damageDetails = PipeListConverter.fromList(damageDetails),
         imagePaths = PipeListConverter.fromList(imagePaths),
+        referenceLinks = PipeListConverter.fromList(referenceLinks),
         extraJson = "{}",
         createdAt = createdAt,
         updatedAt = updatedAt
@@ -95,15 +108,17 @@ data class Item(
             version = entity.version,
             status = entity.status,
             quantity = entity.quantity,
+            originalBagQuantity = entity.originalBagQuantity,
             note = entity.note,
             originPlaces = PipeListConverter.toList(entity.originPlaces),
-            saleFormat = PipeListConverter.toList(entity.saleFormat),
+            saleFormat = PipeListConverter.toList(entity.saleFormat ?: ""),
             sizes = PipeListConverter.toList(entity.sizes),
             materials = PipeListConverter.toList(entity.materials),
             characters = PipeListConverter.toList(entity.characters),
             artTypes = PipeListConverter.toList(entity.artTypes),
             damageDetails = PipeListConverter.toList(entity.damageDetails),
             imagePaths = PipeListConverter.toList(entity.imagePaths),
+            referenceLinks = PipeListConverter.toList(entity.referenceLinks),
             createdAt = entity.createdAt,
             updatedAt = entity.updatedAt
         )

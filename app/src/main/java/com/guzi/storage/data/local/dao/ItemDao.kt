@@ -17,7 +17,7 @@ interface ItemDao {
 
     // ===== 查询 =====
 
-    @Query("SELECT * FROM items ORDER BY updated_at DESC")
+    @Query("SELECT * FROM items ORDER BY created_at DESC")
     fun getAll(): Flow<List<ItemEntity>>
 
     @Query("SELECT * FROM items WHERE id = :id")
@@ -37,13 +37,34 @@ interface ItemDao {
     @Query("SELECT ip_name AS ipName, COUNT(*) AS count FROM items GROUP BY ip_name ORDER BY ip_name")
     fun getIpGroups(): Flow<List<IpGroupInfo>>
 
-    @Query("SELECT * FROM items WHERE ip_name = :ipName ORDER BY updated_at DESC")
+    @Query("""
+        SELECT * FROM items
+        WHERE ip_name = :ipName
+           OR ip_name LIKE :ipName || '|%'
+           OR ip_name LIKE '%|' || :ipName
+           OR ip_name LIKE '%|' || :ipName || '|%'
+        ORDER BY created_at DESC
+    """)
     fun getItemsByIp(ipName: String): Flow<List<ItemEntity>>
 
-    @Query("SELECT * FROM items WHERE category = :category ORDER BY updated_at DESC")
+    @Query("""
+        SELECT * FROM items
+        WHERE category = :category
+           OR category LIKE :category || '|%'
+           OR category LIKE '%|' || :category
+           OR category LIKE '%|' || :category || '|%'
+        ORDER BY created_at DESC
+    """)
     fun getItemsByCategory(category: String): Flow<List<ItemEntity>>
 
-    @Query("SELECT * FROM items WHERE producer = :producer ORDER BY updated_at DESC")
+    @Query("""
+        SELECT * FROM items
+        WHERE producer = :producer
+           OR producer LIKE :producer || '|%'
+           OR producer LIKE '%|' || :producer
+           OR producer LIKE '%|' || :producer || '|%'
+        ORDER BY created_at DESC
+    """)
     fun getItemsByProducer(producer: String): Flow<List<ItemEntity>>
 
     /**
@@ -54,20 +75,27 @@ interface ItemDao {
         WHERE name_cn LIKE '%' || :keyword || '%' 
            OR ip_name LIKE '%' || :keyword || '%' 
            OR name_en LIKE '%' || :keyword || '%'
-        ORDER BY updated_at DESC
+        ORDER BY created_at DESC
     """)
     fun search(keyword: String): Flow<List<ItemEntity>>
 
     /**
      * 按角色筛选（管道符分隔的 characters 列模糊匹配）
      */
-    @Query("SELECT * FROM items WHERE characters LIKE '%' || :character || '%' ORDER BY updated_at DESC")
+    @Query("SELECT * FROM items WHERE characters LIKE '%' || :character || '%' ORDER BY created_at DESC")
     fun getItemsByCharacter(character: String): Flow<List<ItemEntity>>
 
     /**
      * 按种类筛选
      */
-    @Query("SELECT * FROM items WHERE category = :category ORDER BY updated_at DESC")
+    @Query("""
+        SELECT * FROM items
+        WHERE category = :category
+           OR category LIKE :category || '|%'
+           OR category LIKE '%|' || :category
+           OR category LIKE '%|' || :category || '|%'
+        ORDER BY created_at DESC
+    """)
     fun getItemsByCategoryExact(category: String): Flow<List<ItemEntity>>
 
     // ===== 写入 =====

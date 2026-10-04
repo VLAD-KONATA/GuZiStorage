@@ -12,12 +12,14 @@ import com.guzi.storage.ui.SEARCH_FIELD_ALL
 import com.guzi.storage.ui.home.HomeSortOption
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -47,6 +49,8 @@ class GroupViewModel @Inject constructor(
     private val _path = MutableStateFlow<List<Pair<String, String>>>(emptyList())
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
+    @OptIn(FlowPreview::class)
+    private val debouncedSearchQuery: Flow<String> = _searchQuery.debounce(300)
 
     private val _searchField = MutableStateFlow(SEARCH_FIELD_ALL)
     val searchField: StateFlow<String> = _searchField.asStateFlow()
@@ -113,10 +117,10 @@ class GroupViewModel @Inject constructor(
 
     // ===== 子分组列表（中间层级） =====
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val subGroups: StateFlow<List<SubGroupDisplay>> =
         combine(pathFilteredItems, _path, groupingConfig, _subGroupSortOption,
-            combine(_searchQuery, _searchField, _filterConfig) { query, field, filter -> Triple(query, field, filter) }
+            combine(debouncedSearchQuery, _searchField, _filterConfig) { query, field, filter -> Triple(query, field, filter) }
         ) { items, path, config, sortOpt, searchTriple ->
             val (query, field, filter) = searchTriple
             val depth = path.size
@@ -152,9 +156,9 @@ class GroupViewModel @Inject constructor(
 
     // ===== 最终级物品列表（带搜索+筛选+排序） =====
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     val items: StateFlow<List<Item>> =
-        combine(pathFilteredItems, _searchQuery, _searchField, _filterConfig, _sortConfig) { items, query, field, filter, sort ->
+        combine(pathFilteredItems, debouncedSearchQuery, _searchField, _filterConfig, _sortConfig) { items, query, field, filter, sort ->
             val filtered = items.filter { item ->
                 val matchesSearch = when {
                     query.isBlank() -> true
@@ -281,6 +285,13 @@ class GroupViewModel @Inject constructor(
     fun getFilterOptions(attr: String): StateFlow<List<String>> {
         return filterOptionsCache.getOrPut(attr) {
             presetOptionRepository.getOptions(attr)
+                .map { options ->
+                    if (attr == "sizes") {
+                        options.mapNotNull(ItemAttributeUtils::normalizeSizeForMatching).distinct()
+                    } else {
+                        options
+                    }
+                }
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(5000),

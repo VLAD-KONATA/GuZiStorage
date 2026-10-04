@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CheckCircle
@@ -34,11 +35,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -57,6 +62,7 @@ fun ZipImportScreen(
     viewModel: ZipImportViewModel = hiltViewModel()
 ) {
     val importState by viewModel.importState.collectAsState()
+    var smartCompressImages by rememberSaveable { mutableStateOf(false) }
 
     val filePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument()
@@ -97,7 +103,9 @@ fun ZipImportScreen(
                 is ZipImportViewModel.ImportState.Preview -> {
                     PreviewContent(
                         data = state.data,
-                        onConfirm = viewModel::confirmImport,
+                        smartCompressImages = smartCompressImages,
+                        onSmartCompressChange = { smartCompressImages = it },
+                        onConfirm = { viewModel.confirmImport(smartCompressImages) },
                         onCancel = viewModel::reset
                     )
                 }
@@ -155,7 +163,7 @@ private fun IdleContent(onSelectFile: () -> Unit) {
                     "├── transactions.csv（交易记录，id 为外键）\n" +
                     "└── image/（图片文件夹）\n" +
                     "    └── {id}/（与 items.csv 的 id 对应）\n\n" +
-                    "必填字段：中文名称、IP名、发售形式、\n售卖方式、相关角色、柄图种类\n" +
+                    "必填字段：中文名称、IP名、相关角色、柄图种类\n" +
                     "一对多字段用 | 分隔",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -171,6 +179,8 @@ private fun IdleContent(onSelectFile: () -> Unit) {
 @Composable
 private fun PreviewContent(
     data: ZipImportData,
+    smartCompressImages: Boolean,
+    onSmartCompressChange: (Boolean) -> Unit,
     onConfirm: () -> Unit,
     onCancel: () -> Unit
 ) {
@@ -227,11 +237,11 @@ private fun PreviewContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                items(data.items.take(20)) { parsedItem ->
+                items(data.items.take(20), key = { "${it.tempId}:${it.item.id}" }) { parsedItem ->
                     val item = parsedItem.item
                     val imageInfo = if (parsedItem.imageFiles.isNotEmpty()) " [${parsedItem.imageFiles.size}张图]" else ""
                     Text(
-                        text = "• ${item.nameCn}（${item.ipName}）$imageInfo",
+                        text = "• ${item.nameCn}（${item.ipNames.joinToString("、")}）$imageInfo",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(vertical = 2.dp)
                     )
@@ -257,7 +267,7 @@ private fun PreviewContent(
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                items(data.transactions.take(10)) { parsedTxn ->
+                items(data.transactions.take(10), key = { it.transaction.id }) { parsedTxn ->
                     val t = parsedTxn.transaction
                     Text(
                         text = "• ${t.type.value} ${t.nameCn} ¥${t.price} ×${t.quantity}",
@@ -275,7 +285,7 @@ private fun PreviewContent(
                     Spacer(Modifier.height(8.dp))
                     Text("警告信息：", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
                 }
-                items(data.errors) { error ->
+                itemsIndexed(data.errors, key = { index, error -> "$index:$error" }) { _, error ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.padding(vertical = 2.dp)
@@ -287,18 +297,30 @@ private fun PreviewContent(
             }
         }
 
-        // 底部操作按钮
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text("取消") }
-            Button(
-                onClick = onConfirm,
-                modifier = Modifier.weight(1f),
-                enabled = data.items.isNotEmpty()
+        Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("确认导入 ${data.items.size} 条")
+                Text("智能压缩大图", style = MaterialTheme.typography.bodyMedium)
+                Switch(
+                    checked = smartCompressImages,
+                    onCheckedChange = onSmartCompressChange
+                )
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(onClick = onCancel, modifier = Modifier.weight(1f)) { Text("取消") }
+                Button(
+                    onClick = onConfirm,
+                    modifier = Modifier.weight(1f),
+                    enabled = data.items.isNotEmpty()
+                ) {
+                    Text("确认导入 ${data.items.size} 条")
+                }
             }
         }
     }

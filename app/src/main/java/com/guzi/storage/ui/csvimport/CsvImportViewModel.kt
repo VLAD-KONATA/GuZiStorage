@@ -6,8 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.guzi.storage.data.repository.ItemRepository
 import com.guzi.storage.data.repository.PresetOptionRepository
+import com.guzi.storage.data.local.PipeListConverter
 import com.guzi.storage.domain.model.Item
+import com.guzi.storage.util.CurrencyUtils
 import com.guzi.storage.util.DateUtils
+import com.guzi.storage.util.ItemValueParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,7 +26,7 @@ import javax.inject.Inject
  * CSV 批量导入 ViewModel
  *
  * CSV 模板列名（顺序不强制，按列名匹配）:
- * id,中文名称,日文/英文名称,IP名,出品商,出品地,发售形式,售卖方式,价格,发售日期,种类,尺寸,材质,相关角色,柄图种类,状态,版本,数量,备注
+ * id,中文名称,日文/英文名称,IP名,出品商,出品地,发售形式,售卖方式,价格,发售日期,种类,尺寸,材质,相关角色,柄图种类,状态,版本,数量,原袋,参考链接,备注
  *
  * 状态列规则：空→无伤，有值（如 底锈 或 底锈|划痕）→有伤+状态详情
  * 一对多字段用 | 分隔，例如: 高木涉|佐藤美和子
@@ -114,7 +117,7 @@ class CsvImportViewModel @Inject constructor(
 
         // 表头未匹配到任何已知列时给出明确提示
         if (colIndex.isEmpty()) {
-            errorLines.add("表头行无法识别，请确认第一行为列名（如：中文名称,IP名,发售形式,...）")
+            errorLines.add("表头行无法识别，请确认第一行为列名（如：中文名称,IP名,相关角色,...）")
             return Pair(emptyList(), errorLines)
         }
 
@@ -164,6 +167,8 @@ class CsvImportViewModel @Inject constructor(
                 "伤情详情", "伤情" -> map["damage_details"] = index
                 "版本" -> map["version"] = index
                 "数量" -> map["quantity"] = index
+                "原袋", "原袋数量", "original_bag", "original_bag_quantity" -> map["original_bag_quantity"] = index
+                "参考链接", "ref", "reference", "reference_links", "referencelinks" -> map["reference_links"] = index
                 "备注" -> map["note"] = index
             }
         }
@@ -172,19 +177,20 @@ class CsvImportViewModel @Inject constructor(
 
     private fun buildItem(cols: List<String>, colIndex: Map<String, Int>): Pair<Item?, List<String>> {
         fun get(key: String): String = colIndex[key]?.let { if (it < cols.size) cols[it].trim() else "" } ?: ""
-        fun getList(key: String): List<String> = get(key).split("|").map { it.trim() }.filter { it.isNotBlank() }
+        fun getList(key: String): List<String> = ItemValueParser.parseMultiValue(get(key))
 
         val nameCn = get("name_cn")
-        val ipName = get("ip_name")
+        val ipNames = getList("ip_name")
+        val producers = getList("producer")
+        val categories = getList("category")
         val saleFormat = getList("sale_format")
-        val sellMethod = get("sell_method")
+        val sellMethod = get("sell_method").ifBlank { null }
         val characters = getList("characters")
         val artTypes = getList("art_types")
 
         val missing = mutableListOf<String>()
         if (nameCn.isBlank()) missing.add("中文名称")
-        if (ipName.isBlank()) missing.add("IP名")
-        if (saleFormat.isEmpty()) missing.add("发售形式")
+        if (ipNames.isEmpty()) missing.add("IP名")
         if (characters.isEmpty()) missing.add("相关角色")
         if (artTypes.isEmpty()) missing.add("柄图种类")
         if (missing.isNotEmpty()) return Pair(null, missing)
@@ -195,22 +201,22 @@ class CsvImportViewModel @Inject constructor(
         // 兼容旧格式：status="有伤" + damage_details="底锈|划痕"
         val (status, damageDetails) = when {
             statusRaw.isBlank() || statusRaw == "无伤" -> "无伤" to emptyList()
-            statusRaw == "有伤" -> "有伤" to damageRaw.split("|").map { it.trim() }.filter { it.isNotBlank() }
-            else -> "有伤" to statusRaw.split("|").map { it.trim() }.filter { it.isNotBlank() }
+            statusRaw == "有伤" -> "有伤" to ItemValueParser.parseMultiValue(damageRaw)
+            else -> "有伤" to ItemValueParser.parseMultiValue(statusRaw)
         }
 
         val item = Item(
             id = IdGenerator.generate(),
             nameCn = nameCn,
             nameEn = get("name_en").ifBlank { null },
-            ipName = ipName,
-            producer = get("producer").ifBlank { null },
+            ipName = PipeListConverter.fromList(ipNames),
+            producer = PipeListConverter.fromList(producers).ifBlank { null },
             originPlaces = getList("origin_places"),
             saleFormat = saleFormat,
             sellMethod = sellMethod,
-            price = get("price").ifBlank { null },
+            price = CurrencyUtils.parseImportedItemPrice(get("price")),
             releaseDate = DateUtils.normalizeYearMonth(get("release_date")),
-            category = get("category").ifBlank { null },
+            category = PipeListConverter.fromList(categories).ifBlank { null },
             sizes = getList("sizes"),
             materials = getList("materials"),
             characters = characters,
@@ -218,7 +224,9 @@ class CsvImportViewModel @Inject constructor(
             status = status,
             damageDetails = damageDetails,
             version = get("version").ifBlank { null },
-            quantity = get("quantity").toIntOrNull()?.coerceAtLeast(1) ?: 1,
+            quantity = ItemValueParser.parseQuantity(get("quantity")),
+            originalBagQuantity = ItemValueParser.parseOriginalBagQuantity(get("original_bag_quantity")),
+            referenceLinks = getList("reference_links"),
             note = get("note").ifBlank { null }
         )
         return Pair(item, emptyList())
@@ -249,12 +257,12 @@ class CsvImportViewModel @Inject constructor(
      * 将导入数据中的新选项自动加入预设库
      */
     private suspend fun autoSavePresets(items: List<Item>) {
-        val ipNames = items.map { it.ipName }.distinct()
-        val producers = items.mapNotNull { it.producer }.distinct()
+        val ipNames = items.flatMap { it.ipNames }.distinct()
+        val producers = items.flatMap { it.producers }.distinct()
         val originPlaces = items.flatMap { it.originPlaces }.distinct()
         val saleFormats = items.flatMap { it.saleFormat }.distinct()
-        val sellMethods = items.map { it.sellMethod }.distinct()
-        val categories = items.mapNotNull { it.category }.distinct()
+        val sellMethods = items.mapNotNull { it.sellMethod }.distinct()
+        val categories = items.flatMap { it.categories }.distinct()
         val sizes = items.flatMap { it.sizes }.distinct()
         val materials = items.flatMap { it.materials }.distinct()
         val characters = items.flatMap { it.characters }.distinct()

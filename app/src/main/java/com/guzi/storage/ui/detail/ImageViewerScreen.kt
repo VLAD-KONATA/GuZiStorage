@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -46,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import java.io.File
+import android.widget.Toast
 
 /**
  * 全屏大图预览页
@@ -67,6 +69,7 @@ fun ImageViewerScreen(
     }
 
     val item by viewModel.item.collectAsState()
+    val imageSaveResult by viewModel.imageSaveResult.collectAsState()
     val imagePaths = item?.imagePaths ?: emptyList()
     val context = LocalContext.current
 
@@ -76,6 +79,20 @@ fun ImageViewerScreen(
     var showSetFirstImageSheet by remember { mutableStateOf(false) }
     // 设置首图成功后记录目标路径，待图片顺序刷新后滚动跟随
     var pendingScrollPath by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(imageSaveResult) {
+        when (val result = imageSaveResult) {
+            is ImageSaveResult.Success -> {
+                Toast.makeText(context, "图片已保存：${result.path}", Toast.LENGTH_SHORT).show()
+                viewModel.clearImageSaveResult()
+            }
+            is ImageSaveResult.Error -> {
+                Toast.makeText(context, "保存失败：${result.message}", Toast.LENGTH_SHORT).show()
+                viewModel.clearImageSaveResult()
+            }
+            null -> {}
+        }
+    }
 
     if (imagePaths.isEmpty()) {
         Box(
@@ -243,6 +260,35 @@ fun ImageViewerScreen(
                             Text(
                                 text = if (isAlreadyFirst) "当前已是首图" else "设置为首图",
                                 color = Color.White.copy(alpha = if (isAlreadyFirst) 0.4f else 1f),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+                        HorizontalDivider(color = Color.White.copy(alpha = 0.1f))
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null
+                                ) {
+                                    imagePaths.getOrNull(pagerState.currentPage)?.let {
+                                        viewModel.saveImage(it)
+                                    }
+                                    showSetFirstImageSheet = false
+                                }
+                                .padding(horizontal = 20.dp, vertical = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Default.Image,
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Text(
+                                text = "保存图片",
+                                color = Color.White,
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }

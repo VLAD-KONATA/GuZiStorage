@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -23,6 +24,11 @@ class ImageFileManager @Inject constructor(
     companion object {
         private const val COMPRESSED_MAX_DIMENSION = 1024
         private const val COMPRESSED_QUALITY = 85
+        private const val SMART_COMPRESS_THRESHOLD_BYTES = 1024 * 1024
+        private const val SMART_COMPRESS_TARGET_BYTES = 800 * 1024
+        private const val SMART_COMPRESS_INITIAL_DIMENSION = 1600
+        private const val SMART_COMPRESS_MIN_DIMENSION = 320
+        private const val SMART_COMPRESS_MIN_QUALITY = 40
     }
 
     private val imagesDir: File
@@ -121,7 +127,11 @@ class ImageFileManager @Inject constructor(
     /**
      * 从 File 复制图片到物品目录（用于 ZIP 导入，保留原始扩展名）
      */
-    fun copyImageFile(itemId: String, sourceFile: File): String? {
+    fun copyImageFile(itemId: String, sourceFile: File, smartCompress: Boolean = false): String? {
+        if (smartCompress && sourceFile.length() > SMART_COMPRESS_THRESHOLD_BYTES) {
+            compressLargeImageFile(itemId, sourceFile)?.let { return it }
+        }
+
         return try {
             val itemDir = getItemImageDir(itemId)
             val ext = sourceFile.extension.ifBlank { "jpg" }
@@ -133,6 +143,69 @@ class ImageFileManager @Inject constructor(
             e.printStackTrace()
             null
         }
+    }
+
+    private fun compressLargeImageFile(itemId: String, sourceFile: File): String? {
+        return try {
+            if (sourceFile.extension.equals("gif", ignoreCase = true)) return null
+
+            val original = BitmapFactory.decodeFile(sourceFile.absolutePath) ?: return null
+            if (original.hasAlpha()) {
+                original.recycle()
+                return null
+            }
+
+            var maxDimension = SMART_COMPRESS_INITIAL_DIMENSION
+            var bestBytes: ByteArray? = null
+            while (maxDimension >= SMART_COMPRESS_MIN_DIMENSION) {
+                val scaled = scaleBitmapToMaxDimension(original, maxDimension)
+                var quality = 90
+                while (quality >= SMART_COMPRESS_MIN_QUALITY) {
+                    val bytes = ByteArrayOutputStream().use { out ->
+                        scaled.compress(Bitmap.CompressFormat.JPEG, quality, out)
+                        out.toByteArray()
+                    }
+                    if (bestBytes == null || bytes.size < bestBytes!!.size) {
+                        bestBytes = bytes
+                    }
+                    if (bytes.size <= SMART_COMPRESS_TARGET_BYTES) {
+                        val relativePath = writeCompressedBytes(itemId, bytes)
+                        if (scaled !== original) scaled.recycle()
+                        original.recycle()
+                        return relativePath
+                    }
+                    quality -= 5
+                }
+                if (scaled !== original) scaled.recycle()
+                maxDimension = (maxDimension * 0.85f).toInt()
+            }
+
+            original.recycle()
+            bestBytes?.let { writeCompressedBytes(itemId, it) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun scaleBitmapToMaxDimension(bitmap: Bitmap, maxDimension: Int): Bitmap {
+        val width = bitmap.width
+        val height = bitmap.height
+        val longest = maxOf(width, height)
+        if (longest <= maxDimension) return bitmap
+
+        val scale = maxDimension.toFloat() / longest
+        val targetWidth = (width * scale).toInt().coerceAtLeast(1)
+        val targetHeight = (height * scale).toInt().coerceAtLeast(1)
+        return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
+    }
+
+    private fun writeCompressedBytes(itemId: String, bytes: ByteArray): String {
+        val itemDir = getItemImageDir(itemId)
+        val fileName = "${IdGenerator.generate()}.jpg"
+        val outputFile = File(itemDir, fileName)
+        outputFile.writeBytes(bytes)
+        return "images/$itemId/$fileName"
     }
 
     /**

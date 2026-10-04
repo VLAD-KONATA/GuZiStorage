@@ -10,6 +10,8 @@ import com.guzi.storage.domain.model.Item
 import com.guzi.storage.util.CurrencyUtils
 import com.guzi.storage.util.DateUtils
 import com.guzi.storage.util.ImageFileManager
+import com.guzi.storage.util.ItemValueParser
+import com.guzi.storage.data.local.PipeListConverter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -82,17 +84,29 @@ class AddItemViewModel @Inject constructor(
 
     private fun loadPresetOptions() {
         viewModelScope.launch {
-            _ipOptions.value = presetOptionRepository.getOptionValues("ip_name")
+            val items = itemRepository.getAllItems().first()
+            _ipOptions.value = sortByFrequency(items.flatMap { it.ipNames })
             _producerOptions.value = presetOptionRepository.getOptionValues("producer")
-            _originPlaceOptions.value = presetOptionRepository.getOptionValues("origin_places")
+            _originPlaceOptions.value = sortByFrequency(items.flatMap { it.originPlaces })
             _saleFormatOptions.value = presetOptionRepository.getOptionValues("sale_format")
             _sellMethodOptions.value = presetOptionRepository.getOptionValues("sell_method")
-            _categoryOptions.value = presetOptionRepository.getOptionValues("category")
-            _sizeOptions.value = presetOptionRepository.getOptionValues("sizes")
-            _materialOptions.value = presetOptionRepository.getOptionValues("materials")
-            _characterOptions.value = presetOptionRepository.getOptionValues("characters")
+            _categoryOptions.value = sortByFrequency(items.flatMap { it.categories })
+            _sizeOptions.value = sortByFrequency(items.flatMap { it.sizes })
+            _materialOptions.value = sortByFrequency(items.flatMap { it.materials })
+            _characterOptions.value = sortByFrequency(items.flatMap { it.characters })
             _artTypeOptions.value = presetOptionRepository.getOptionValues("art_types")
         }
+    }
+
+    private fun sortByFrequency(values: List<String>): List<String> {
+        return values
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .groupingBy { it }
+            .eachCount()
+            .entries
+            .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }.thenBy { it.key })
+            .map { it.key }
     }
 
     /**
@@ -101,8 +115,8 @@ class AddItemViewModel @Inject constructor(
     fun setDefaultIpName(ipName: String) {
         if (ipName.isBlank()) return
         val current = _formState.value
-        if (!current.isEditMode && current.ipName.isBlank()) {
-            _formState.value = current.copy(ipName = ipName)
+        if (!current.isEditMode && current.ipNames.isEmpty()) {
+            _formState.value = current.copy(ipNames = listOf(ipName))
         }
     }
 
@@ -118,15 +132,16 @@ class AddItemViewModel @Inject constructor(
                 itemId = item.id,
                 nameCn = item.nameCn,
                 nameEn = item.nameEn ?: "",
-                ipName = item.ipName,
-                producer = item.producer ?: "",
+                ipNames = item.ipNames,
+                producers = item.producers,
                 originPlaces = item.originPlaces,
                 saleFormat = item.saleFormat,
-                sellMethod = item.sellMethod,
-                price = parsedPrice.amount,
-                currency = parsedPrice.currencyCode ?: CurrencyUtils.DEFAULT_CURRENCY,
+                sellMethod = item.sellMethod ?: "",
+                price = if (item.price == "0") "0" else parsedPrice.amount,
+                currency = if (item.price == "0") "" else parsedPrice.currencyCode ?: CurrencyUtils.DEFAULT_CURRENCY,
+                isNoPrice = item.price == "0",
                 releaseDate = item.releaseDate ?: "",
-                category = item.category ?: "",
+                categories = item.categories,
                 sizes = item.sizes,
                 materials = item.materials,
                 characters = item.characters,
@@ -135,8 +150,11 @@ class AddItemViewModel @Inject constructor(
                 damageDetails = item.damageDetails,
                 version = item.version ?: "",
                 quantity = item.quantity.toString(),
+                originalBagQuantity = item.originalBagQuantity?.toString() ?: "",
+                isOriginalBagUnknown = item.originalBagQuantity == null,
                 note = item.note ?: "",
                 imagePaths = item.imagePaths,
+                referenceLinks = item.referenceLinks,
                 isEditMode = true
             )
         }
@@ -166,15 +184,16 @@ class AddItemViewModel @Inject constructor(
                 itemId = newId,
                 nameCn = item.nameCn,
                 nameEn = item.nameEn ?: "",
-                ipName = item.ipName,
-                producer = item.producer ?: "",
+                ipNames = item.ipNames,
+                producers = item.producers,
                 originPlaces = item.originPlaces,
                 saleFormat = item.saleFormat,
-                sellMethod = item.sellMethod,
-                price = parsedPrice.amount,
-                currency = parsedPrice.currencyCode ?: CurrencyUtils.DEFAULT_CURRENCY,
+                sellMethod = item.sellMethod ?: "",
+                price = if (item.price == "0") "0" else parsedPrice.amount,
+                currency = if (item.price == "0") "" else parsedPrice.currencyCode ?: CurrencyUtils.DEFAULT_CURRENCY,
+                isNoPrice = item.price == "0",
                 releaseDate = item.releaseDate ?: "",
-                category = item.category ?: "",
+                categories = item.categories,
                 sizes = item.sizes,
                 materials = item.materials,
                 characters = item.characters,
@@ -183,8 +202,11 @@ class AddItemViewModel @Inject constructor(
                 damageDetails = item.damageDetails,
                 version = item.version ?: "",
                 quantity = item.quantity.toString(),
+                originalBagQuantity = item.originalBagQuantity?.toString() ?: "",
+                isOriginalBagUnknown = item.originalBagQuantity == null,
                 note = item.note ?: "",
                 imagePaths = newImagePaths,
+                referenceLinks = item.referenceLinks,
                 isEditMode = false
             )
         }
@@ -200,12 +222,12 @@ class AddItemViewModel @Inject constructor(
         _formState.value = _formState.value.copy(nameEn = value)
     }
 
-    fun updateIpName(value: String) {
-        _formState.value = _formState.value.copy(ipName = value)
+    fun updateIpNames(value: List<String>) {
+        _formState.value = _formState.value.copy(ipNames = value)
     }
 
-    fun updateProducer(value: String) {
-        _formState.value = _formState.value.copy(producer = value)
+    fun updateProducers(value: List<String>) {
+        _formState.value = _formState.value.copy(producers = value)
     }
 
     fun updateOriginPlaces(value: List<String>) {
@@ -221,19 +243,29 @@ class AddItemViewModel @Inject constructor(
     }
 
     fun updatePrice(value: String) {
+        if (_formState.value.isNoPrice) return
         _formState.value = _formState.value.copy(price = value)
     }
 
     fun updateCurrency(value: String) {
+        if (_formState.value.isNoPrice) return
         _formState.value = _formState.value.copy(currency = value)
+    }
+
+    fun updateIsNoPrice(value: Boolean) {
+        _formState.value = if (value) {
+            _formState.value.copy(isNoPrice = true, price = "0", currency = "")
+        } else {
+            _formState.value.copy(isNoPrice = false, price = "", currency = CurrencyUtils.DEFAULT_CURRENCY)
+        }
     }
 
     fun updateReleaseDate(value: String) {
         _formState.value = _formState.value.copy(releaseDate = value)
     }
 
-    fun updateCategory(value: String) {
-        _formState.value = _formState.value.copy(category = value)
+    fun updateCategories(value: List<String>) {
+        _formState.value = _formState.value.copy(categories = value)
     }
 
     fun updateSizes(value: List<String>) {
@@ -272,8 +304,25 @@ class AddItemViewModel @Inject constructor(
         _formState.value = _formState.value.copy(quantity = value)
     }
 
+    fun updateOriginalBagQuantity(value: String) {
+        if (_formState.value.isOriginalBagUnknown) return
+        _formState.value = _formState.value.copy(originalBagQuantity = value)
+    }
+
+    fun updateIsOriginalBagUnknown(value: Boolean) {
+        _formState.value = if (value) {
+            _formState.value.copy(isOriginalBagUnknown = true, originalBagQuantity = "")
+        } else {
+            _formState.value.copy(isOriginalBagUnknown = false)
+        }
+    }
+
     fun updateNote(value: String) {
         _formState.value = _formState.value.copy(note = value)
+    }
+
+    fun updateReferenceLinks(value: List<String>) {
+        _formState.value = _formState.value.copy(referenceLinks = value)
     }
 
     /**
@@ -334,23 +383,35 @@ class AddItemViewModel @Inject constructor(
         val errors = mutableMapOf<String, String>()
 
         if (state.nameCn.isBlank()) errors["nameCn"] = "中文名称不能为空"
-        if (state.ipName.isBlank()) errors["ipName"] = "IP名不能为空"
-        if (state.saleFormat.isEmpty()) errors["saleFormat"] = "发售形式不能为空"
+        if (state.ipNames.isEmpty()) errors["ipName"] = "IP名不能为空"
         if (state.characters.isEmpty()) errors["characters"] = "相关角色不能为空"
         if (state.artTypes.isEmpty()) errors["artTypes"] = "柄图种类不能为空"
 
         // 价格校验
-        if (state.price.isNotBlank()) {
-            state.price.toDoubleOrNull() ?: run {
-                errors["price"] = "价格必须为数字"
+        if (!state.isNoPrice && state.price.isNotBlank()) {
+            val price = state.price.toDoubleOrNull()
+            if (price == null || price <= 0) {
+                errors["price"] = "价格必须为正数，或勾选该商品无价格"
             }
         }
 
-        // 数量校验
-        state.quantity.toIntOrNull()?.let { qty ->
-            if (qty < 1) errors["quantity"] = "数量至少为1"
-        } ?: run {
-            errors["quantity"] = "数量必须为整数"
+        val pipeFields = buildMap<String, List<String>> {
+            put("originPlaces", state.originPlaces)
+            put("saleFormat", state.saleFormat)
+            put("ipNames", state.ipNames)
+            put("producers", state.producers)
+            put("categories", state.categories)
+            put("sizes", state.sizes)
+            put("materials", state.materials)
+            put("characters", state.characters)
+            put("artTypes", state.artTypes)
+            put("damageDetails", state.damageDetails)
+            put("referenceLinks", state.referenceLinks)
+        }
+        pipeFields.forEach { (field, values) ->
+            if (values.any { ItemValueParser.hasPipe(it) }) {
+                errors[field] = "单个值不能包含 |"
+            }
         }
 
         _formState.value = state.copy(validationErrors = errors)
@@ -369,15 +430,24 @@ class AddItemViewModel @Inject constructor(
                     id = state.itemId,
                     nameCn = state.nameCn,
                     nameEn = state.nameEn.ifBlank { null },
-                    ipName = state.ipName,
-                    producer = state.producer.ifBlank { null },
-                    sellMethod = state.sellMethod,
-                    price = CurrencyUtils.buildPriceString(state.price, state.currency),
+                    ipName = PipeListConverter.fromList(state.ipNames),
+                    producer = PipeListConverter.fromList(state.producers).ifBlank { null },
+                    sellMethod = state.sellMethod.ifBlank { null },
+                    price = if (state.isNoPrice) {
+                        "0"
+                    } else {
+                        CurrencyUtils.buildPriceString(state.price, state.currency)
+                    },
                     releaseDate = DateUtils.normalizeYearMonth(state.releaseDate),
-                    category = state.category.ifBlank { null },
+                    category = PipeListConverter.fromList(state.categories).ifBlank { null },
                     version = state.version.ifBlank { "初贩" },
                     status = state.status,
-                    quantity = state.quantity.toIntOrNull() ?: 1,
+                    quantity = ItemValueParser.parseQuantity(state.quantity),
+                    originalBagQuantity = if (state.isOriginalBagUnknown) {
+                        null
+                    } else {
+                        ItemValueParser.parseOriginalBagQuantity(state.originalBagQuantity)
+                    },
                     note = state.note.ifBlank { null },
                     originPlaces = state.originPlaces,
                     saleFormat = state.saleFormat,
@@ -386,7 +456,8 @@ class AddItemViewModel @Inject constructor(
                     characters = state.characters,
                     artTypes = state.artTypes,
                     damageDetails = state.damageDetails,
-                    imagePaths = state.imagePaths
+                    imagePaths = state.imagePaths,
+                    referenceLinks = state.referenceLinks
                 )
 
                 if (state.isEditMode) {
@@ -422,10 +493,10 @@ class AddItemViewModel @Inject constructor(
         fun List<String>.newItems(existing: List<String>) = filter { it.isNotBlank() && it !in existing }
         fun String.newItem(existing: List<String>) = if (isNotBlank() && this !in existing) this else null
 
-        state.ipName.newItem(_ipOptions.value)?.let { presetOptionRepository.addOption("ip_name", it) }
-        state.producer.newItem(_producerOptions.value)?.let { presetOptionRepository.addOption("producer", it) }
+        state.ipNames.newItems(_ipOptions.value).forEach { presetOptionRepository.addOption("ip_name", it) }
+        state.producers.newItems(_producerOptions.value).forEach { presetOptionRepository.addOption("producer", it) }
         state.sellMethod.newItem(_sellMethodOptions.value)?.let { presetOptionRepository.addOption("sell_method", it) }
-        state.category.newItem(_categoryOptions.value)?.let { presetOptionRepository.addOption("category", it) }
+        state.categories.newItems(_categoryOptions.value).forEach { presetOptionRepository.addOption("category", it) }
         state.originPlaces.newItems(_originPlaceOptions.value).forEach { presetOptionRepository.addOption("origin_places", it) }
         state.saleFormat.newItems(_saleFormatOptions.value).forEach { presetOptionRepository.addOption("sale_format", it) }
         state.sizes.newItems(_sizeOptions.value).forEach { presetOptionRepository.addOption("sizes", it) }
@@ -445,15 +516,16 @@ data class ItemFormState(
     val itemId: String = IdGenerator.generate(),
     val nameCn: String = "",
     val nameEn: String = "",
-    val ipName: String = "",
-    val producer: String = "",
+    val ipNames: List<String> = emptyList(),
+    val producers: List<String> = emptyList(),
     val originPlaces: List<String> = emptyList(),
     val saleFormat: List<String> = emptyList(),
     val sellMethod: String = "",
     val price: String = "",
     val currency: String = CurrencyUtils.DEFAULT_CURRENCY,
+    val isNoPrice: Boolean = false,
     val releaseDate: String = "",
-    val category: String = "",
+    val categories: List<String> = emptyList(),
     val sizes: List<String> = emptyList(),
     val materials: List<String> = emptyList(),
     val characters: List<String> = emptyList(),
@@ -462,8 +534,11 @@ data class ItemFormState(
     val damageDetails: List<String> = emptyList(),
     val version: String = "初贩",
     val quantity: String = "1",
+    val originalBagQuantity: String = "",
+    val isOriginalBagUnknown: Boolean = false,
     val note: String = "",
     val imagePaths: List<String> = emptyList(),
+    val referenceLinks: List<String> = emptyList(),
     val pendingDeleteImagePaths: List<String> = emptyList(),
     val isEditMode: Boolean = false,
     val validationErrors: Map<String, String> = emptyMap()

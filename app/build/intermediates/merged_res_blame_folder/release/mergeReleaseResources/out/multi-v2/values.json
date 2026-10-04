@@ -21,20 +21,20 @@
                     }
                 },
                 {
-                    "source": "D:\\Git\\GuZiStorage\\GuZiStorage\\app\\src\\main\\res\\values\\themes.xml",
+                    "source": "D:\\Git\\GuZiStorage\\app\\src\\main\\res\\values\\strings.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
                         "startOffsets": "57",
-                        "endColumns": "88",
-                        "endOffsets": "141"
+                        "endColumns": "41",
+                        "endOffsets": "94"
                     },
                     "to": {
-                        "startLines": "230",
+                        "startLines": "106",
                         "startColumns": "4",
-                        "startOffsets": "14691",
-                        "endColumns": "87",
-                        "endOffsets": "14774"
+                        "startOffsets": "6448",
+                        "endColumns": "41",
+                        "endOffsets": "6485"
                     }
                 },
                 {
@@ -109,23 +109,6 @@
                         "endLines": "103,121,122,123,124,125,126,127,128,129,132,133,134,135,136,137,138,139,140,141,142,145,146,147,148,149,150,151,152,153,154,155,156,157,158,159,160,161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180,181,208,211",
                         "endColumns": "72,87,85,80,83,68,64,82,105,85,13,53,68,60,68,88,94,73,96,92,97,13,90,87,95,97,63,67,86,93,66,71,71,100,108,75,68,47,65,63,73,56,56,71,49,53,70,70,69,68,57,75,70,73,85,49,69,64,12,12",
                         "endOffsets": "6290,7540,7626,7707,7791,7860,7925,8008,8114,8200,8320,8374,8443,8504,8573,8662,8757,8831,8928,9021,9119,9268,9359,9447,9543,9641,9705,9773,9860,9954,10021,10093,10165,10266,10375,10451,10520,10568,10634,10698,10772,10829,10886,10958,11008,11062,11133,11204,11274,11343,11401,11477,11548,11622,11708,11758,11828,11893,13469,13622"
-                    }
-                },
-                {
-                    "source": "D:\\Git\\GuZiStorage\\GuZiStorage\\app\\src\\main\\res\\values\\strings.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "57",
-                        "endColumns": "41",
-                        "endOffsets": "94"
-                    },
-                    "to": {
-                        "startLines": "106",
-                        "startColumns": "4",
-                        "startOffsets": "6448",
-                        "endColumns": "41",
-                        "endOffsets": "6485"
                     }
                 },
                 {
@@ -268,6 +251,23 @@
                         "startOffsets": "6055",
                         "endColumns": "49",
                         "endOffsets": "6100"
+                    }
+                },
+                {
+                    "source": "D:\\Git\\GuZiStorage\\app\\src\\main\\res\\values\\themes.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "57",
+                        "endColumns": "88",
+                        "endOffsets": "141"
+                    },
+                    "to": {
+                        "startLines": "230",
+                        "startColumns": "4",
+                        "startOffsets": "14691",
+                        "endColumns": "87",
+                        "endOffsets": "14774"
                     }
                 },
                 {

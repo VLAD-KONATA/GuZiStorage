@@ -1,6 +1,10 @@
 package com.guzi.storage.ui.settings
 
 import android.content.Intent
+import android.net.Uri
+import android.provider.DocumentsContract
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,12 +38,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.launch
 
 /**
  * 所有可管理的预设属性定义
@@ -71,8 +77,24 @@ fun SettingsScreen(
 ) {
     val context = LocalContext.current
     val autoSaveEnabled by viewModel.autoSavePresetsEnabled.collectAsState()
+    val imageSaveDirectory by viewModel.imageSaveDirectory.collectAsState()
     val exportState by viewModel.exportState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
+    val directoryPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocumentTree()
+    ) { uri ->
+        val path = uri?.let(::resolvePrimaryTreeUriToPath)
+        if (path != null) {
+            viewModel.setImageSaveDirectory(path)
+            coroutineScope.launch { snackbarHostState.showSnackbar("图片保存路径已更新") }
+        } else if (uri != null) {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar("暂不支持该目录，请选择内部存储中的文件夹")
+            }
+        }
+    }
 
     // 导出完成后启动分享 Intent
     LaunchedEffect(exportState) {
@@ -237,6 +259,43 @@ fun SettingsScreen(
                 }
             }
 
+            // ===== 图片设置 =====
+            item {
+                Text(
+                    text = "图片设置",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
+            item {
+                Column {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { directoryPickerLauncher.launch(null) }
+                            .padding(horizontal = 16.dp, vertical = 14.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(text = "图片保存路径", style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = imageSaveDirectory,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
+                }
+            }
+
             // ===== 预设选项管理 =====
             item {
                 Text(
@@ -246,7 +305,7 @@ fun SettingsScreen(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-            items(PRESET_ATTRIBUTES) { (attributeName, label) ->
+            items(PRESET_ATTRIBUTES, key = { it.first }) { (attributeName, label) ->
                 Column {
                     Row(
                         modifier = Modifier
@@ -267,5 +326,18 @@ fun SettingsScreen(
                 }
             }
         }
+    }
+}
+
+private fun resolvePrimaryTreeUriToPath(uri: Uri): String? {
+    val documentId = runCatching { DocumentsContract.getTreeDocumentId(uri) }.getOrNull()
+        ?: return null
+    val parts = documentId.split(":", limit = 2)
+    if (parts.firstOrNull() != "primary") return null
+    val relativePath = parts.getOrNull(1).orEmpty()
+    return if (relativePath.isBlank()) {
+        "/storage/emulated/0"
+    } else {
+        "/storage/emulated/0/$relativePath"
     }
 }

@@ -5,8 +5,11 @@ import android.net.Uri;
 import androidx.lifecycle.ViewModel;
 import com.guzi.storage.data.repository.ItemRepository;
 import com.guzi.storage.data.repository.PresetOptionRepository;
+import com.guzi.storage.data.local.PipeListConverter;
 import com.guzi.storage.domain.model.Item;
+import com.guzi.storage.util.CurrencyUtils;
 import com.guzi.storage.util.DateUtils;
+import com.guzi.storage.util.ItemValueParser;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import kotlinx.coroutines.flow.StateFlow;
@@ -19,7 +22,7 @@ import javax.inject.Inject;
  * CSV 批量导入 ViewModel
  *
  * CSV 模板列名（顺序不强制，按列名匹配）:
- * id,中文名称,日文/英文名称,IP名,出品商,出品地,发售形式,售卖方式,价格,发售日期,种类,尺寸,材质,相关角色,柄图种类,状态,版本,数量,备注
+ * id,中文名称,日文/英文名称,IP名,出品商,出品地,发售形式,售卖方式,价格,发售日期,种类,尺寸,材质,相关角色,柄图种类,状态,版本,数量,原袋,参考链接,备注
  *
  * 状态列规则：空→无伤，有值（如 底锈 或 底锈|划痕）→有伤+状态详情
  * 一对多字段用 | 分隔，例如: 高木涉|佐藤美和子

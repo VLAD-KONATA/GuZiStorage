@@ -8,12 +8,15 @@ import androidx.lifecycle.viewModelScope
 import com.guzi.storage.data.repository.ItemRepository
 import com.guzi.storage.data.repository.PresetOptionRepository
 import com.guzi.storage.data.repository.TransactionRepository
+import com.guzi.storage.data.local.PipeListConverter
 import com.guzi.storage.domain.model.Item
+import com.guzi.storage.util.CurrencyUtils
 import com.guzi.storage.util.DateUtils
 import com.guzi.storage.util.IdGenerator
 import com.guzi.storage.domain.model.Transaction
 import com.guzi.storage.domain.model.TransactionType
 import com.guzi.storage.util.ImageFileManager
+import com.guzi.storage.util.ItemValueParser
 import com.guzi.storage.util.ZipExtractor
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -95,7 +98,7 @@ class StandaloneImportViewModel @Inject constructor(
         }
     }
 
-    fun confirmImport() {
+    fun confirmImport(smartCompressImages: Boolean = false) {
         val data = previewData ?: return
         viewModelScope.launch {
             _importState.value = ImportState.Loading
@@ -103,7 +106,7 @@ class StandaloneImportViewModel @Inject constructor(
                 when (importType) {
                     StandaloneImportType.ITEMS_CSV -> confirmItemsCsv(data as StandalonePreviewData.ItemsPreview)
                     StandaloneImportType.TRANSACTIONS_CSV -> confirmTransactionsCsv(data as StandalonePreviewData.TransactionsPreview)
-                    StandaloneImportType.IMAGE_ZIP -> confirmImageZip(data as StandalonePreviewData.ImagesPreview)
+                    StandaloneImportType.IMAGE_ZIP -> confirmImageZip(data as StandalonePreviewData.ImagesPreview, smartCompressImages)
                 }
             } catch (e: Exception) {
                 _importState.value = ImportState.Error("导入失败：${e.message}")
@@ -171,7 +174,11 @@ class StandaloneImportViewModel @Inject constructor(
             val match = existingItems.find { isDuplicateItem(it, imported) }
 
             if (match != null) {
-                itemsToUpdate.add(match.copy(quantity = match.quantity + imported.quantity))
+                itemsToUpdate.add(match.copy(
+                    quantity = match.quantity + imported.quantity,
+                    originalBagQuantity = mergeOriginalBagQuantity(match.originalBagQuantity, imported.originalBagQuantity),
+                    referenceLinks = (match.referenceLinks + imported.referenceLinks).distinct()
+                ))
                 mergedCount++
             } else {
                 newItems.add(imported)
@@ -328,7 +335,7 @@ class StandaloneImportViewModel @Inject constructor(
         )
     }
 
-    private suspend fun confirmImageZip(data: StandalonePreviewData.ImagesPreview) {
+    private suspend fun confirmImageZip(data: StandalonePreviewData.ImagesPreview, smartCompressImages: Boolean) {
         var totalImages = 0
         val itemsToUpdate = mutableListOf<Item>()
         val existingItems = itemRepository.getAllItems().first()
@@ -337,7 +344,7 @@ class StandaloneImportViewModel @Inject constructor(
         for (group in data.groups) {
             val existing = itemMap[group.itemId] ?: continue
             val newPaths = group.imageFiles.mapNotNull { file ->
-                imageFileManager.copyImageFile(group.itemId, file)
+                imageFileManager.copyImageFile(group.itemId, file, smartCompressImages)
             }
             if (newPaths.isNotEmpty()) {
                 itemsToUpdate.add(existing.copy(
@@ -376,12 +383,12 @@ class StandaloneImportViewModel @Inject constructor(
     /** 判断两个物品是否在指定字段上完全相同（用于导入去重） */
     private fun isDuplicateItem(existing: Item, imported: Item): Boolean {
         return existing.nameCn == imported.nameCn &&
-               existing.ipName == imported.ipName &&
-               (existing.producer ?: "") == (imported.producer ?: "") &&
+               existing.ipNames.toSet() == imported.ipNames.toSet() &&
+               existing.producers.toSet() == imported.producers.toSet() &&
                existing.originPlaces.toSet() == imported.originPlaces.toSet() &&
                existing.saleFormat.toSet() == imported.saleFormat.toSet() &&
-               existing.sellMethod == imported.sellMethod &&
-               (existing.category ?: "") == (imported.category ?: "") &&
+               (existing.sellMethod ?: "") == (imported.sellMethod ?: "") &&
+               existing.categories.toSet() == imported.categories.toSet() &&
                existing.sizes.toSet() == imported.sizes.toSet() &&
                existing.characters.toSet() == imported.characters.toSet() &&
                existing.artTypes.toSet() == imported.artTypes.toSet() &&
@@ -413,6 +420,8 @@ class StandaloneImportViewModel @Inject constructor(
                 "伤情详情", "伤情" -> map["damage_details"] = index
                 "版本" -> map["version"] = index
                 "数量" -> map["quantity"] = index
+                "原袋", "原袋数量", "original_bag", "original_bag_quantity" -> map["original_bag_quantity"] = index
+                "参考链接", "ref", "reference", "reference_links", "referencelinks" -> map["reference_links"] = index
                 "备注" -> map["note"] = index
             }
         }
@@ -441,19 +450,20 @@ class StandaloneImportViewModel @Inject constructor(
 
     private fun buildItem(cols: List<String>, colIndex: Map<String, Int>): Pair<Item?, List<String>> {
         fun get(key: String): String = getCol(cols, colIndex, key)
-        fun getList(key: String): List<String> = get(key).split("|").map { it.trim() }.filter { it.isNotBlank() }
+        fun getList(key: String): List<String> = ItemValueParser.parseMultiValue(get(key))
 
         val nameCn = get("name_cn")
-        val ipName = get("ip_name")
+        val ipNames = getList("ip_name")
+        val producers = getList("producer")
+        val categories = getList("category")
         val saleFormat = getList("sale_format")
-        val sellMethod = get("sell_method")
+        val sellMethod = get("sell_method").ifBlank { null }
         val characters = getList("characters")
         val artTypes = getList("art_types")
 
         val missing = mutableListOf<String>()
         if (nameCn.isBlank()) missing.add("中文名称")
-        if (ipName.isBlank()) missing.add("IP名")
-        if (saleFormat.isEmpty()) missing.add("发售形式")
+        if (ipNames.isEmpty()) missing.add("IP名")
         if (characters.isEmpty()) missing.add("相关角色")
         if (artTypes.isEmpty()) missing.add("柄图种类")
         if (missing.isNotEmpty()) return Pair(null, missing)
@@ -464,22 +474,22 @@ class StandaloneImportViewModel @Inject constructor(
         // 兼容旧格式：status="有伤" + damage_details="底锈|划痕"
         val (status, damageDetails) = when {
             statusRaw.isBlank() || statusRaw == "无伤" -> "无伤" to emptyList()
-            statusRaw == "有伤" -> "有伤" to damageRaw.split("|").map { it.trim() }.filter { it.isNotBlank() }
-            else -> "有伤" to statusRaw.split("|").map { it.trim() }.filter { it.isNotBlank() }
+            statusRaw == "有伤" -> "有伤" to ItemValueParser.parseMultiValue(damageRaw)
+            else -> "有伤" to ItemValueParser.parseMultiValue(statusRaw)
         }
 
         val item = Item(
             id = IdGenerator.generate(),
             nameCn = nameCn,
             nameEn = get("name_en").ifBlank { null },
-            ipName = ipName,
-            producer = get("producer").ifBlank { null },
+            ipName = PipeListConverter.fromList(ipNames),
+            producer = PipeListConverter.fromList(producers).ifBlank { null },
             originPlaces = getList("origin_places"),
             saleFormat = saleFormat,
             sellMethod = sellMethod,
-            price = get("price").ifBlank { null },
+            price = CurrencyUtils.parseImportedItemPrice(get("price")),
             releaseDate = DateUtils.normalizeYearMonth(get("release_date")),
-            category = get("category").ifBlank { null },
+            category = PipeListConverter.fromList(categories).ifBlank { null },
             sizes = getList("sizes"),
             materials = getList("materials"),
             characters = characters,
@@ -487,7 +497,9 @@ class StandaloneImportViewModel @Inject constructor(
             status = status,
             damageDetails = damageDetails,
             version = get("version").ifBlank { null },
-            quantity = get("quantity").toIntOrNull()?.coerceAtLeast(1) ?: 1,
+            quantity = ItemValueParser.parseQuantity(get("quantity")),
+            originalBagQuantity = ItemValueParser.parseOriginalBagQuantity(get("original_bag_quantity")),
+            referenceLinks = getList("reference_links"),
             note = get("note").ifBlank { null }
         )
         return Pair(item, emptyList())
@@ -512,12 +524,12 @@ class StandaloneImportViewModel @Inject constructor(
     }
 
     private suspend fun autoSavePresets(items: List<Item>) {
-        val ipNames = items.map { it.ipName }.distinct()
-        val producers = items.mapNotNull { it.producer }.distinct()
+        val ipNames = items.flatMap { it.ipNames }.distinct()
+        val producers = items.flatMap { it.producers }.distinct()
         val originPlaces = items.flatMap { it.originPlaces }.distinct()
         val saleFormats = items.flatMap { it.saleFormat }.distinct()
-        val sellMethods = items.map { it.sellMethod }.distinct()
-        val categories = items.mapNotNull { it.category }.distinct()
+        val sellMethods = items.mapNotNull { it.sellMethod }.distinct()
+        val categories = items.flatMap { it.categories }.distinct()
         val sizes = items.flatMap { it.sizes }.distinct()
         val materials = items.flatMap { it.materials }.distinct()
         val characters = items.flatMap { it.characters }.distinct()
@@ -534,6 +546,9 @@ class StandaloneImportViewModel @Inject constructor(
         presetOptionRepository.addOptions("characters", characters)
         presetOptionRepository.addOptions("art_types", artTypes)
     }
+
+    private fun mergeOriginalBagQuantity(existing: Int?, imported: Int?): Int? =
+        if (existing == null && imported == null) null else (existing ?: 0) + (imported ?: 0)
 
     private fun cleanupTempDir() {
         tempDir?.let { dir ->

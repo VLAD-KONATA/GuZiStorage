@@ -3,7 +3,9 @@ local
 drawable ic_launcher_background
 drawable ic_launcher_foreground
 mipmap ic_launcher
+mipmap ic_launcher_foreground_bitmap
 mipmap ic_launcher_round
+mipmap ic_launcher_round_foreground_bitmap
 string app_name
 style Theme.GuZiStorage
 xml file_paths

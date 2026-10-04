@@ -170,7 +170,7 @@ fun FilterDialog(
             contentPadding = PaddingValues(vertical = 8.dp)
         ) {
             // 已添加的筛选条件
-            items(localFilters.keys.toList()) { attrName ->
+            items(localFilters.keys.toList(), key = { it }) { attrName ->
                 val label = getAttributeLabel(attrName)
                 val selected = localFilters[attrName] ?: emptySet()
                 val isExpanded = expandedAttr == attrName

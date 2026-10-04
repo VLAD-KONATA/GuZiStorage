@@ -39,7 +39,7 @@ data class ItemEntity(
     val producer: String? = null,
 
     @ColumnInfo(name = "sell_method")
-    val sellMethod: String,
+    val sellMethod: String? = null,
 
     val price: String? = null,
 
@@ -54,6 +54,9 @@ data class ItemEntity(
 
     val quantity: Int = 1,
 
+    @ColumnInfo(name = "original_bag_quantity")
+    val originalBagQuantity: Int? = null,
+
     val note: String? = null,
 
     // ===== 多选字段（管道符分隔存储）=====
@@ -61,7 +64,7 @@ data class ItemEntity(
     val originPlaces: String = "",
 
     @ColumnInfo(name = "sale_format")
-    val saleFormat: String = "",
+    val saleFormat: String? = null,
 
     val sizes: String = "",
 
@@ -77,6 +80,9 @@ data class ItemEntity(
 
     @ColumnInfo(name = "image_paths")
     val imagePaths: String = "",
+
+    @ColumnInfo(name = "reference_links")
+    val referenceLinks: String = "",
 
     // ===== 未来扩展 =====
     @ColumnInfo(name = "extra_json")

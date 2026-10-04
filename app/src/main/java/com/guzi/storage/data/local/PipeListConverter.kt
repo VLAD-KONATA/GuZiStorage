@@ -14,12 +14,21 @@ object PipeListConverter {
      * List<String> → 管道符分隔字符串
      * 空列表返回空字符串
      */
-    fun fromList(list: List<String>): String = list.joinToString(DELIMITER)
+    fun fromList(list: List<String>): String =
+        list.map { it.trim() }
+            .filter { it.isNotBlank() }
+            .joinToString(DELIMITER)
 
     /**
      * 管道符分隔字符串 → List<String>
      * 空字符串返回空列表
      */
     fun toList(value: String): List<String> =
-        if (value.isBlank()) emptyList() else value.split(DELIMITER)
+        if (value.isBlank()) {
+            emptyList()
+        } else {
+            value.split(DELIMITER)
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+        }
 }

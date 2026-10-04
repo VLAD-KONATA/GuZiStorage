@@ -42,10 +42,10 @@ public final class AppDatabase_Impl extends AppDatabase {
   @Override
   @NonNull
   protected SupportSQLiteOpenHelper createOpenHelper(@NonNull final DatabaseConfiguration config) {
-    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(3) {
+    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(config, new RoomOpenHelper.Delegate(5) {
       @Override
       public void createAllTables(@NonNull final SupportSQLiteDatabase db) {
-        db.execSQL("CREATE TABLE IF NOT EXISTS `items` (`id` TEXT NOT NULL, `name_cn` TEXT NOT NULL, `name_en` TEXT, `ip_name` TEXT NOT NULL, `producer` TEXT, `sell_method` TEXT NOT NULL, `price` TEXT, `category` TEXT, `release_date` TEXT, `version` TEXT, `status` TEXT NOT NULL, `quantity` INTEGER NOT NULL, `note` TEXT, `origin_places` TEXT NOT NULL, `sale_format` TEXT NOT NULL, `sizes` TEXT NOT NULL, `materials` TEXT NOT NULL, `characters` TEXT NOT NULL, `art_types` TEXT NOT NULL, `damage_details` TEXT NOT NULL, `image_paths` TEXT NOT NULL, `extra_json` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))");
+        db.execSQL("CREATE TABLE IF NOT EXISTS `items` (`id` TEXT NOT NULL, `name_cn` TEXT NOT NULL, `name_en` TEXT, `ip_name` TEXT NOT NULL, `producer` TEXT, `sell_method` TEXT, `price` TEXT, `category` TEXT, `release_date` TEXT, `version` TEXT, `status` TEXT NOT NULL, `quantity` INTEGER NOT NULL, `original_bag_quantity` INTEGER, `note` TEXT, `origin_places` TEXT NOT NULL, `sale_format` TEXT, `sizes` TEXT NOT NULL, `materials` TEXT NOT NULL, `characters` TEXT NOT NULL, `art_types` TEXT NOT NULL, `damage_details` TEXT NOT NULL, `image_paths` TEXT NOT NULL, `reference_links` TEXT NOT NULL, `extra_json` TEXT NOT NULL, `created_at` INTEGER NOT NULL, `updated_at` INTEGER NOT NULL, PRIMARY KEY(`id`))");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_items_ip_name` ON `items` (`ip_name`)");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_items_status` ON `items` (`status`)");
         db.execSQL("CREATE INDEX IF NOT EXISTS `index_items_category` ON `items` (`category`)");
@@ -54,7 +54,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         db.execSQL("CREATE TABLE IF NOT EXISTS `preset_options` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `attribute_name` TEXT NOT NULL, `option_value` TEXT NOT NULL, `sort_order` INTEGER NOT NULL)");
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_preset_options_attribute_name_option_value` ON `preset_options` (`attribute_name`, `option_value`)");
         db.execSQL("CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)");
-        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '77d57e7ea4f1a26bd98c4059c1c60f9f')");
+        db.execSQL("INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9579b2de518bbf6805438d3bb160321a')");
       }
 
       @Override
@@ -106,28 +106,30 @@ public final class AppDatabase_Impl extends AppDatabase {
       @NonNull
       public RoomOpenHelper.ValidationResult onValidateSchema(
           @NonNull final SupportSQLiteDatabase db) {
-        final HashMap<String, TableInfo.Column> _columnsItems = new HashMap<String, TableInfo.Column>(24);
+        final HashMap<String, TableInfo.Column> _columnsItems = new HashMap<String, TableInfo.Column>(26);
         _columnsItems.put("id", new TableInfo.Column("id", "TEXT", true, 1, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("name_cn", new TableInfo.Column("name_cn", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("name_en", new TableInfo.Column("name_en", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("ip_name", new TableInfo.Column("ip_name", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("producer", new TableInfo.Column("producer", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsItems.put("sell_method", new TableInfo.Column("sell_method", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsItems.put("sell_method", new TableInfo.Column("sell_method", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("price", new TableInfo.Column("price", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("category", new TableInfo.Column("category", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("release_date", new TableInfo.Column("release_date", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("version", new TableInfo.Column("version", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("status", new TableInfo.Column("status", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("quantity", new TableInfo.Column("quantity", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsItems.put("original_bag_quantity", new TableInfo.Column("original_bag_quantity", "INTEGER", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("note", new TableInfo.Column("note", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("origin_places", new TableInfo.Column("origin_places", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
-        _columnsItems.put("sale_format", new TableInfo.Column("sale_format", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsItems.put("sale_format", new TableInfo.Column("sale_format", "TEXT", false, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("sizes", new TableInfo.Column("sizes", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("materials", new TableInfo.Column("materials", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("characters", new TableInfo.Column("characters", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("art_types", new TableInfo.Column("art_types", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("damage_details", new TableInfo.Column("damage_details", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("image_paths", new TableInfo.Column("image_paths", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
+        _columnsItems.put("reference_links", new TableInfo.Column("reference_links", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("extra_json", new TableInfo.Column("extra_json", "TEXT", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("created_at", new TableInfo.Column("created_at", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
         _columnsItems.put("updated_at", new TableInfo.Column("updated_at", "INTEGER", true, 0, null, TableInfo.CREATED_FROM_ENTITY));
@@ -185,7 +187,7 @@ public final class AppDatabase_Impl extends AppDatabase {
         }
         return new RoomOpenHelper.ValidationResult(true, null);
       }
-    }, "77d57e7ea4f1a26bd98c4059c1c60f9f", "b2a8e281b23f46e34ce9f20349006b8c");
+    }, "9579b2de518bbf6805438d3bb160321a", "a1f86282606028c63963982a21abfc96");
     final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(config.context).name(config.name).callback(_openCallback).build();
     final SupportSQLiteOpenHelper _helper = config.sqliteOpenHelperFactory.create(_sqliteConfig);
     return _helper;

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.guzi.storage.data.repository.ItemRepository
 import com.guzi.storage.data.repository.TransactionRepository
 import com.guzi.storage.domain.model.Item
+import com.guzi.storage.util.ImageExportManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val itemRepository: ItemRepository,
-    private val transactionRepository: TransactionRepository
+    private val transactionRepository: TransactionRepository,
+    private val imageExportManager: ImageExportManager
 ) : ViewModel() {
 
     private val _itemId = MutableStateFlow<String?>(null)
@@ -58,6 +60,9 @@ class DetailViewModel @Inject constructor(
     // 删除完成后触发导航返回
     private val _deleteComplete = MutableStateFlow(false)
     val deleteComplete: StateFlow<Boolean> = _deleteComplete.asStateFlow()
+
+    private val _imageSaveResult = MutableStateFlow<ImageSaveResult?>(null)
+    val imageSaveResult: StateFlow<ImageSaveResult?> = _imageSaveResult.asStateFlow()
 
     fun setItemId(id: String) {
         _itemId.value = id
@@ -98,4 +103,23 @@ class DetailViewModel @Inject constructor(
             )
         }
     }
+
+    fun saveImage(imagePath: String) {
+        viewModelScope.launch {
+            val result = imageExportManager.saveImage(imagePath)
+            _imageSaveResult.value = result.fold(
+                onSuccess = { ImageSaveResult.Success(it.absolutePath) },
+                onFailure = { ImageSaveResult.Error(it.message ?: "保存失败") }
+            )
+        }
+    }
+
+    fun clearImageSaveResult() {
+        _imageSaveResult.value = null
+    }
+}
+
+sealed class ImageSaveResult {
+    data class Success(val path: String) : ImageSaveResult()
+    data class Error(val message: String) : ImageSaveResult()
 }

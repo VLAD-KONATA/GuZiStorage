@@ -48,7 +48,7 @@ public final class ItemDao_Impl implements ItemDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "INSERT OR REPLACE INTO `items` (`id`,`name_cn`,`name_en`,`ip_name`,`producer`,`sell_method`,`price`,`category`,`release_date`,`version`,`status`,`quantity`,`note`,`origin_places`,`sale_format`,`sizes`,`materials`,`characters`,`art_types`,`damage_details`,`image_paths`,`extra_json`,`created_at`,`updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        return "INSERT OR REPLACE INTO `items` (`id`,`name_cn`,`name_en`,`ip_name`,`producer`,`sell_method`,`price`,`category`,`release_date`,`version`,`status`,`quantity`,`original_bag_quantity`,`note`,`origin_places`,`sale_format`,`sizes`,`materials`,`characters`,`art_types`,`damage_details`,`image_paths`,`reference_links`,`extra_json`,`created_at`,`updated_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       }
 
       @Override
@@ -67,7 +67,11 @@ public final class ItemDao_Impl implements ItemDao {
         } else {
           statement.bindString(5, entity.getProducer());
         }
-        statement.bindString(6, entity.getSellMethod());
+        if (entity.getSellMethod() == null) {
+          statement.bindNull(6);
+        } else {
+          statement.bindString(6, entity.getSellMethod());
+        }
         if (entity.getPrice() == null) {
           statement.bindNull(7);
         } else {
@@ -90,22 +94,32 @@ public final class ItemDao_Impl implements ItemDao {
         }
         statement.bindString(11, entity.getStatus());
         statement.bindLong(12, entity.getQuantity());
-        if (entity.getNote() == null) {
+        if (entity.getOriginalBagQuantity() == null) {
           statement.bindNull(13);
         } else {
-          statement.bindString(13, entity.getNote());
+          statement.bindLong(13, entity.getOriginalBagQuantity());
         }
-        statement.bindString(14, entity.getOriginPlaces());
-        statement.bindString(15, entity.getSaleFormat());
-        statement.bindString(16, entity.getSizes());
-        statement.bindString(17, entity.getMaterials());
-        statement.bindString(18, entity.getCharacters());
-        statement.bindString(19, entity.getArtTypes());
-        statement.bindString(20, entity.getDamageDetails());
-        statement.bindString(21, entity.getImagePaths());
-        statement.bindString(22, entity.getExtraJson());
-        statement.bindLong(23, entity.getCreatedAt());
-        statement.bindLong(24, entity.getUpdatedAt());
+        if (entity.getNote() == null) {
+          statement.bindNull(14);
+        } else {
+          statement.bindString(14, entity.getNote());
+        }
+        statement.bindString(15, entity.getOriginPlaces());
+        if (entity.getSaleFormat() == null) {
+          statement.bindNull(16);
+        } else {
+          statement.bindString(16, entity.getSaleFormat());
+        }
+        statement.bindString(17, entity.getSizes());
+        statement.bindString(18, entity.getMaterials());
+        statement.bindString(19, entity.getCharacters());
+        statement.bindString(20, entity.getArtTypes());
+        statement.bindString(21, entity.getDamageDetails());
+        statement.bindString(22, entity.getImagePaths());
+        statement.bindString(23, entity.getReferenceLinks());
+        statement.bindString(24, entity.getExtraJson());
+        statement.bindLong(25, entity.getCreatedAt());
+        statement.bindLong(26, entity.getUpdatedAt());
       }
     };
     this.__deletionAdapterOfItemEntity = new EntityDeletionOrUpdateAdapter<ItemEntity>(__db) {
@@ -125,7 +139,7 @@ public final class ItemDao_Impl implements ItemDao {
       @Override
       @NonNull
       protected String createQuery() {
-        return "UPDATE OR ABORT `items` SET `id` = ?,`name_cn` = ?,`name_en` = ?,`ip_name` = ?,`producer` = ?,`sell_method` = ?,`price` = ?,`category` = ?,`release_date` = ?,`version` = ?,`status` = ?,`quantity` = ?,`note` = ?,`origin_places` = ?,`sale_format` = ?,`sizes` = ?,`materials` = ?,`characters` = ?,`art_types` = ?,`damage_details` = ?,`image_paths` = ?,`extra_json` = ?,`created_at` = ?,`updated_at` = ? WHERE `id` = ?";
+        return "UPDATE OR ABORT `items` SET `id` = ?,`name_cn` = ?,`name_en` = ?,`ip_name` = ?,`producer` = ?,`sell_method` = ?,`price` = ?,`category` = ?,`release_date` = ?,`version` = ?,`status` = ?,`quantity` = ?,`original_bag_quantity` = ?,`note` = ?,`origin_places` = ?,`sale_format` = ?,`sizes` = ?,`materials` = ?,`characters` = ?,`art_types` = ?,`damage_details` = ?,`image_paths` = ?,`reference_links` = ?,`extra_json` = ?,`created_at` = ?,`updated_at` = ? WHERE `id` = ?";
       }
 
       @Override
@@ -144,7 +158,11 @@ public final class ItemDao_Impl implements ItemDao {
         } else {
           statement.bindString(5, entity.getProducer());
         }
-        statement.bindString(6, entity.getSellMethod());
+        if (entity.getSellMethod() == null) {
+          statement.bindNull(6);
+        } else {
+          statement.bindString(6, entity.getSellMethod());
+        }
         if (entity.getPrice() == null) {
           statement.bindNull(7);
         } else {
@@ -167,23 +185,33 @@ public final class ItemDao_Impl implements ItemDao {
         }
         statement.bindString(11, entity.getStatus());
         statement.bindLong(12, entity.getQuantity());
-        if (entity.getNote() == null) {
+        if (entity.getOriginalBagQuantity() == null) {
           statement.bindNull(13);
         } else {
-          statement.bindString(13, entity.getNote());
+          statement.bindLong(13, entity.getOriginalBagQuantity());
         }
-        statement.bindString(14, entity.getOriginPlaces());
-        statement.bindString(15, entity.getSaleFormat());
-        statement.bindString(16, entity.getSizes());
-        statement.bindString(17, entity.getMaterials());
-        statement.bindString(18, entity.getCharacters());
-        statement.bindString(19, entity.getArtTypes());
-        statement.bindString(20, entity.getDamageDetails());
-        statement.bindString(21, entity.getImagePaths());
-        statement.bindString(22, entity.getExtraJson());
-        statement.bindLong(23, entity.getCreatedAt());
-        statement.bindLong(24, entity.getUpdatedAt());
-        statement.bindString(25, entity.getId());
+        if (entity.getNote() == null) {
+          statement.bindNull(14);
+        } else {
+          statement.bindString(14, entity.getNote());
+        }
+        statement.bindString(15, entity.getOriginPlaces());
+        if (entity.getSaleFormat() == null) {
+          statement.bindNull(16);
+        } else {
+          statement.bindString(16, entity.getSaleFormat());
+        }
+        statement.bindString(17, entity.getSizes());
+        statement.bindString(18, entity.getMaterials());
+        statement.bindString(19, entity.getCharacters());
+        statement.bindString(20, entity.getArtTypes());
+        statement.bindString(21, entity.getDamageDetails());
+        statement.bindString(22, entity.getImagePaths());
+        statement.bindString(23, entity.getReferenceLinks());
+        statement.bindString(24, entity.getExtraJson());
+        statement.bindLong(25, entity.getCreatedAt());
+        statement.bindLong(26, entity.getUpdatedAt());
+        statement.bindString(27, entity.getId());
       }
     };
   }
@@ -263,7 +291,7 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getAll() {
-    final String _sql = "SELECT * FROM items ORDER BY updated_at DESC";
+    final String _sql = "SELECT * FROM items ORDER BY created_at DESC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"items"}, new Callable<List<ItemEntity>>() {
       @Override
@@ -283,6 +311,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -292,6 +321,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -317,7 +347,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -346,6 +380,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -355,7 +395,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -368,13 +412,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;
@@ -415,6 +461,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -424,6 +471,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -448,7 +496,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -477,6 +529,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -486,7 +544,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -499,13 +561,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _result = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _result = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
           } else {
             _result = null;
           }
@@ -542,6 +606,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -551,6 +616,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -575,7 +641,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -604,6 +674,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -613,7 +689,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -626,13 +706,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _result = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _result = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
           } else {
             _result = null;
           }
@@ -686,9 +768,22 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getItemsByIp(final String ipName) {
-    final String _sql = "SELECT * FROM items WHERE ip_name = ? ORDER BY updated_at DESC";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    final String _sql = "\n"
+            + "        SELECT * FROM items\n"
+            + "        WHERE ip_name = ?\n"
+            + "           OR ip_name LIKE ? || '|%'\n"
+            + "           OR ip_name LIKE '%|' || ?\n"
+            + "           OR ip_name LIKE '%|' || ? || '|%'\n"
+            + "        ORDER BY created_at DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;
+    _statement.bindString(_argIndex, ipName);
+    _argIndex = 2;
+    _statement.bindString(_argIndex, ipName);
+    _argIndex = 3;
+    _statement.bindString(_argIndex, ipName);
+    _argIndex = 4;
     _statement.bindString(_argIndex, ipName);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"items"}, new Callable<List<ItemEntity>>() {
       @Override
@@ -708,6 +803,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -717,6 +813,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -742,7 +839,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -771,6 +872,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -780,7 +887,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -793,13 +904,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;
@@ -817,9 +930,22 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getItemsByCategory(final String category) {
-    final String _sql = "SELECT * FROM items WHERE category = ? ORDER BY updated_at DESC";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    final String _sql = "\n"
+            + "        SELECT * FROM items\n"
+            + "        WHERE category = ?\n"
+            + "           OR category LIKE ? || '|%'\n"
+            + "           OR category LIKE '%|' || ?\n"
+            + "           OR category LIKE '%|' || ? || '|%'\n"
+            + "        ORDER BY created_at DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;
+    _statement.bindString(_argIndex, category);
+    _argIndex = 2;
+    _statement.bindString(_argIndex, category);
+    _argIndex = 3;
+    _statement.bindString(_argIndex, category);
+    _argIndex = 4;
     _statement.bindString(_argIndex, category);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"items"}, new Callable<List<ItemEntity>>() {
       @Override
@@ -839,6 +965,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -848,6 +975,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -873,7 +1001,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -902,6 +1034,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -911,7 +1049,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -924,13 +1066,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;
@@ -948,9 +1092,22 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getItemsByProducer(final String producer) {
-    final String _sql = "SELECT * FROM items WHERE producer = ? ORDER BY updated_at DESC";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    final String _sql = "\n"
+            + "        SELECT * FROM items\n"
+            + "        WHERE producer = ?\n"
+            + "           OR producer LIKE ? || '|%'\n"
+            + "           OR producer LIKE '%|' || ?\n"
+            + "           OR producer LIKE '%|' || ? || '|%'\n"
+            + "        ORDER BY created_at DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;
+    _statement.bindString(_argIndex, producer);
+    _argIndex = 2;
+    _statement.bindString(_argIndex, producer);
+    _argIndex = 3;
+    _statement.bindString(_argIndex, producer);
+    _argIndex = 4;
     _statement.bindString(_argIndex, producer);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"items"}, new Callable<List<ItemEntity>>() {
       @Override
@@ -970,6 +1127,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -979,6 +1137,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -1004,7 +1163,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -1033,6 +1196,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -1042,7 +1211,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -1055,13 +1228,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;
@@ -1084,7 +1259,7 @@ public final class ItemDao_Impl implements ItemDao {
             + "        WHERE name_cn LIKE '%' || ? || '%' \n"
             + "           OR ip_name LIKE '%' || ? || '%' \n"
             + "           OR name_en LIKE '%' || ? || '%'\n"
-            + "        ORDER BY updated_at DESC\n"
+            + "        ORDER BY created_at DESC\n"
             + "    ";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 3);
     int _argIndex = 1;
@@ -1111,6 +1286,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -1120,6 +1296,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -1145,7 +1322,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -1174,6 +1355,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -1183,7 +1370,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -1196,13 +1387,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;
@@ -1220,7 +1413,7 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getItemsByCharacter(final String character) {
-    final String _sql = "SELECT * FROM items WHERE characters LIKE '%' || ? || '%' ORDER BY updated_at DESC";
+    final String _sql = "SELECT * FROM items WHERE characters LIKE '%' || ? || '%' ORDER BY created_at DESC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
     _statement.bindString(_argIndex, character);
@@ -1242,6 +1435,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -1251,6 +1445,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -1276,7 +1471,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -1305,6 +1504,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -1314,7 +1519,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -1327,13 +1536,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;
@@ -1351,9 +1562,22 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getItemsByCategoryExact(final String category) {
-    final String _sql = "SELECT * FROM items WHERE category = ? ORDER BY updated_at DESC";
-    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
+    final String _sql = "\n"
+            + "        SELECT * FROM items\n"
+            + "        WHERE category = ?\n"
+            + "           OR category LIKE ? || '|%'\n"
+            + "           OR category LIKE '%|' || ?\n"
+            + "           OR category LIKE '%|' || ? || '|%'\n"
+            + "        ORDER BY created_at DESC\n"
+            + "    ";
+    final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;
+    _statement.bindString(_argIndex, category);
+    _argIndex = 2;
+    _statement.bindString(_argIndex, category);
+    _argIndex = 3;
+    _statement.bindString(_argIndex, category);
+    _argIndex = 4;
     _statement.bindString(_argIndex, category);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"items"}, new Callable<List<ItemEntity>>() {
       @Override
@@ -1373,6 +1597,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfVersion = CursorUtil.getColumnIndexOrThrow(_cursor, "version");
           final int _cursorIndexOfStatus = CursorUtil.getColumnIndexOrThrow(_cursor, "status");
           final int _cursorIndexOfQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "quantity");
+          final int _cursorIndexOfOriginalBagQuantity = CursorUtil.getColumnIndexOrThrow(_cursor, "original_bag_quantity");
           final int _cursorIndexOfNote = CursorUtil.getColumnIndexOrThrow(_cursor, "note");
           final int _cursorIndexOfOriginPlaces = CursorUtil.getColumnIndexOrThrow(_cursor, "origin_places");
           final int _cursorIndexOfSaleFormat = CursorUtil.getColumnIndexOrThrow(_cursor, "sale_format");
@@ -1382,6 +1607,7 @@ public final class ItemDao_Impl implements ItemDao {
           final int _cursorIndexOfArtTypes = CursorUtil.getColumnIndexOrThrow(_cursor, "art_types");
           final int _cursorIndexOfDamageDetails = CursorUtil.getColumnIndexOrThrow(_cursor, "damage_details");
           final int _cursorIndexOfImagePaths = CursorUtil.getColumnIndexOrThrow(_cursor, "image_paths");
+          final int _cursorIndexOfReferenceLinks = CursorUtil.getColumnIndexOrThrow(_cursor, "reference_links");
           final int _cursorIndexOfExtraJson = CursorUtil.getColumnIndexOrThrow(_cursor, "extra_json");
           final int _cursorIndexOfCreatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "created_at");
           final int _cursorIndexOfUpdatedAt = CursorUtil.getColumnIndexOrThrow(_cursor, "updated_at");
@@ -1407,7 +1633,11 @@ public final class ItemDao_Impl implements ItemDao {
               _tmpProducer = _cursor.getString(_cursorIndexOfProducer);
             }
             final String _tmpSellMethod;
-            _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            if (_cursor.isNull(_cursorIndexOfSellMethod)) {
+              _tmpSellMethod = null;
+            } else {
+              _tmpSellMethod = _cursor.getString(_cursorIndexOfSellMethod);
+            }
             final String _tmpPrice;
             if (_cursor.isNull(_cursorIndexOfPrice)) {
               _tmpPrice = null;
@@ -1436,6 +1666,12 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpStatus = _cursor.getString(_cursorIndexOfStatus);
             final int _tmpQuantity;
             _tmpQuantity = _cursor.getInt(_cursorIndexOfQuantity);
+            final Integer _tmpOriginalBagQuantity;
+            if (_cursor.isNull(_cursorIndexOfOriginalBagQuantity)) {
+              _tmpOriginalBagQuantity = null;
+            } else {
+              _tmpOriginalBagQuantity = _cursor.getInt(_cursorIndexOfOriginalBagQuantity);
+            }
             final String _tmpNote;
             if (_cursor.isNull(_cursorIndexOfNote)) {
               _tmpNote = null;
@@ -1445,7 +1681,11 @@ public final class ItemDao_Impl implements ItemDao {
             final String _tmpOriginPlaces;
             _tmpOriginPlaces = _cursor.getString(_cursorIndexOfOriginPlaces);
             final String _tmpSaleFormat;
-            _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            if (_cursor.isNull(_cursorIndexOfSaleFormat)) {
+              _tmpSaleFormat = null;
+            } else {
+              _tmpSaleFormat = _cursor.getString(_cursorIndexOfSaleFormat);
+            }
             final String _tmpSizes;
             _tmpSizes = _cursor.getString(_cursorIndexOfSizes);
             final String _tmpMaterials;
@@ -1458,13 +1698,15 @@ public final class ItemDao_Impl implements ItemDao {
             _tmpDamageDetails = _cursor.getString(_cursorIndexOfDamageDetails);
             final String _tmpImagePaths;
             _tmpImagePaths = _cursor.getString(_cursorIndexOfImagePaths);
+            final String _tmpReferenceLinks;
+            _tmpReferenceLinks = _cursor.getString(_cursorIndexOfReferenceLinks);
             final String _tmpExtraJson;
             _tmpExtraJson = _cursor.getString(_cursorIndexOfExtraJson);
             final long _tmpCreatedAt;
             _tmpCreatedAt = _cursor.getLong(_cursorIndexOfCreatedAt);
             final long _tmpUpdatedAt;
             _tmpUpdatedAt = _cursor.getLong(_cursorIndexOfUpdatedAt);
-            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
+            _item = new ItemEntity(_tmpId,_tmpNameCn,_tmpNameEn,_tmpIpName,_tmpProducer,_tmpSellMethod,_tmpPrice,_tmpCategory,_tmpReleaseDate,_tmpVersion,_tmpStatus,_tmpQuantity,_tmpOriginalBagQuantity,_tmpNote,_tmpOriginPlaces,_tmpSaleFormat,_tmpSizes,_tmpMaterials,_tmpCharacters,_tmpArtTypes,_tmpDamageDetails,_tmpImagePaths,_tmpReferenceLinks,_tmpExtraJson,_tmpCreatedAt,_tmpUpdatedAt);
             _result.add(_item);
           }
           return _result;

@@ -6,6 +6,7 @@ import com.guzi.storage.domain.model.Item
  * 物品属性取值工具 - 统一访问单值和多值字段
  */
 object ItemAttributeUtils {
+    private val SIZE_NOTE_REGEX = Regex("[（(][^）)]*[）)]")
 
     /**
      * 获取物品在指定属性下的单值（如果属性是多值字段，返回第一个值或 null）
@@ -17,21 +18,32 @@ object ItemAttributeUtils {
             "name_cn" -> listOf(item.nameCn)
             "name_en" -> listOfNotNull(item.nameEn)
             "note" -> listOfNotNull(item.note)
-            "ip_name" -> listOf(item.ipName)
-            "producer" -> listOfNotNull(item.producer)
-            "category" -> listOfNotNull(item.category)
+            "ip_name" -> item.ipNames
+            "producer" -> item.producers
+            "category" -> item.categories
             "status" -> listOf(item.status)
             "version" -> listOfNotNull(item.version)
             "release_date" -> listOf(item.releaseDate ?: "未知")
-            "sell_method" -> listOf(item.sellMethod)
+            "sell_method" -> item.sellMethod?.takeIf { it.isNotBlank() }?.let { listOf(it) } ?: emptyList()
             "characters" -> item.characters
             "art_types" -> item.artTypes
-            "sizes" -> item.sizes
+            "sizes" -> item.sizes.mapNotNull(::normalizeSizeForMatching)
             "materials" -> item.materials
             "origin_places" -> item.originPlaces
             "sale_format" -> item.saleFormat
             else -> emptyList()
         }
+    }
+
+    /**
+     * 尺寸用于搜索/筛选/分组时忽略括号说明。
+     * 例："56mm（圆吧唧）" -> "56mm"，详情页仍展示原始值。
+     */
+    fun normalizeSizeForMatching(value: String): String? {
+        return value
+            .replace(SIZE_NOTE_REGEX, "")
+            .trim()
+            .takeIf { it.isNotBlank() }
     }
 
     /**

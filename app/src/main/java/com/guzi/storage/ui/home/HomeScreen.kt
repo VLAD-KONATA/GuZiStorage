@@ -261,7 +261,7 @@ fun HomeScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        items(ipGroups) { group ->
+                        items(ipGroups, key = { "${it.attrName}:${it.attrValue}" }) { group ->
                             IpGroupGridCard(
                                 groupName = group.attrValue,
                                 count = group.count,
@@ -282,7 +282,7 @@ fun HomeScreen(
                         contentPadding = PaddingValues(16.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(ipGroups) { group ->
+                        items(ipGroups, key = { "${it.attrName}:${it.attrValue}" }) { group ->
                             IpGroupListCard(
                                 groupName = group.attrValue,
                                 count = group.count,

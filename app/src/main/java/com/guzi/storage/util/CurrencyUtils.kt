@@ -39,11 +39,13 @@ object CurrencyUtils {
     /**
      * 将存储的 price 字符串格式化为展示文本
      * "550y" → "550日元"
+     * "0"    → "无"
      * "550"  → "550"（无货币后缀，原样返回）
      * null/blank → ""
      */
     fun formatPrice(priceStr: String?): String {
         if (priceStr.isNullOrBlank()) return ""
+        if (priceStr == "0") return "无"
         for ((code, name) in CURRENCY_LIST) {
             if (priceStr.endsWith(code)) {
                 val amount = priceStr.dropLast(code.length)
@@ -80,6 +82,27 @@ object CurrencyUtils {
     fun buildPriceString(amount: String, currencyCode: String): String? {
         if (amount.isBlank()) return null
         return "$amount$currencyCode"
+    }
+
+    /**
+     * CSV/ZIP 导入用价格解析。
+     *
+     * 空值表示价格未知，存 null；正数 + 合法货币后缀按原规则存储；
+     * 不带后缀的数字、<=0、非法格式统一存 "0"，表示无价格/赠品/特殊景品。
+     */
+    fun parseImportedItemPrice(raw: String): String? {
+        val value = raw.trim()
+        if (value.isBlank()) return null
+
+        for ((code, _) in CURRENCY_LIST) {
+            if (value.endsWith(code)) {
+                val amount = value.dropLast(code.length)
+                val parsedAmount = amount.toDoubleOrNull() ?: return "0"
+                return if (parsedAmount > 0) value else "0"
+            }
+        }
+
+        return "0"
     }
 
     /** 获取货币中文名称 */

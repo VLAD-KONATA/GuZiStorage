@@ -463,7 +463,7 @@ private fun SubGroupContent(
                                 verticalArrangement = Arrangement.spacedBy(10.dp),
                                 modifier = Modifier.fillMaxSize().verticalFastScroller(itemGridState)
                             ) {
-                                items(items) { item ->
+                                items(items, key = { it.id }) { item ->
                                     ItemGridCard(
                                         item = item,
                                         isSelected = false,
@@ -481,7 +481,7 @@ private fun SubGroupContent(
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.fillMaxSize().verticalFastScroller(itemListState)
                             ) {
-                                items(items) { item ->
+                                items(items, key = { it.id }) { item ->
                                     ItemListCard(
                                         item = item,
                                         isSelected = false,
@@ -523,7 +523,7 @@ private fun SubGroupContent(
                                 verticalArrangement = Arrangement.spacedBy(10.dp),
                                 modifier = Modifier.fillMaxSize().verticalFastScroller(groupGridState)
                             ) {
-                                items(subGroups) { group ->
+                                items(subGroups, key = { "${it.attrName}:${it.attrValue}" }) { group ->
                                     SubGroupGridCard(
                                         groupName = group.attrValue,
                                         count = group.count,
@@ -551,7 +551,7 @@ private fun SubGroupContent(
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 modifier = Modifier.fillMaxSize().verticalFastScroller(groupListState)
                             ) {
-                                items(subGroups) { group ->
+                                items(subGroups, key = { "${it.attrName}:${it.attrValue}" }) { group ->
                                     SubGroupListCard(
                                         groupName = group.attrValue,
                                         count = group.count,
@@ -970,7 +970,7 @@ private fun FinalLevelContent(
                             verticalArrangement = Arrangement.spacedBy(10.dp),
                             modifier = Modifier.fillMaxSize().verticalFastScroller(itemGridState)
                         ) {
-                            items(items) { item ->
+                            items(items, key = { it.id }) { item ->
                                 val isSelected = item.id in selectedIds
                                 ItemGridCard(
                                     item = item,
@@ -992,7 +992,7 @@ private fun FinalLevelContent(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.fillMaxSize().verticalFastScroller(itemListState)
                         ) {
-                            items(items) { item ->
+                            items(items, key = { it.id }) { item ->
                                 val isSelected = item.id in selectedIds
                                 ItemListCard(
                                     item = item,
@@ -1037,13 +1037,19 @@ private fun ItemGridCard(
     ) {
         Box {
             Column {
-                ItemThumbnail(
-                    imagePaths = item.imagePaths,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f),
-                    firstOnly = true
-                )
+                Box {
+                    ItemThumbnail(
+                        imagePaths = item.imagePaths,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f),
+                        firstOnly = true,
+                        quantity = item.quantity
+                    )
+                    if (item.quantity == 0) {
+                        NotOwnedOverlay(modifier = Modifier.matchParentSize())
+                    }
+                }
 
                 Column(
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
@@ -1065,9 +1071,9 @@ private fun ItemGridCard(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    if (item.category != null) {
+                    if (item.categories.isNotEmpty()) {
                         Text(
-                            text = item.category,
+                            text = item.categories.joinToString("、"),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,
@@ -1135,6 +1141,13 @@ private fun ItemListCard(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                     )
                 }
+                if (item.quantity == 0) {
+                    NotOwnedOverlay(modifier = Modifier.matchParentSize())
+                }
+                QuantityBadge(
+                    quantity = item.quantity,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                )
             }
 
             Column(
@@ -1150,7 +1163,7 @@ private fun ItemListCard(
                 )
                 val subInfo = buildList {
                     if (item.characters.isNotEmpty()) add(item.characters.joinToString("、"))
-                    if (item.category != null) add(item.category)
+                    if (item.categories.isNotEmpty()) add(item.categories.joinToString("、"))
                     if (item.status != "无伤") add(item.status)
                 }.joinToString(" · ")
                 if (subInfo.isNotEmpty()) {
@@ -1171,6 +1184,21 @@ private fun ItemListCard(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun NotOwnedOverlay(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.background(Color.Black.copy(alpha = 0.45f)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "暂未拥有",
+            style = MaterialTheme.typography.labelMedium,
+            color = Color.White,
+            fontWeight = FontWeight.Bold
+        )
     }
 }
 
@@ -1213,7 +1241,8 @@ private fun SelectionIndicator(
 fun ItemThumbnail(
     imagePaths: List<String>,
     modifier: Modifier = Modifier,
-    firstOnly: Boolean = false
+    firstOnly: Boolean = false,
+    quantity: Int? = null
 ) {
     if (firstOnly) {
         Box(
@@ -1254,6 +1283,10 @@ fun ItemThumbnail(
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
+            QuantityBadge(
+                quantity = quantity,
+                modifier = Modifier.align(Alignment.BottomEnd)
+            )
         }
         return
     }
@@ -1318,4 +1351,24 @@ fun ItemThumbnail(
             }
         }
     }
+}
+
+@Composable
+private fun QuantityBadge(
+    quantity: Int?,
+    modifier: Modifier = Modifier
+) {
+    if (quantity == null || quantity < 1) return
+
+    Text(
+        text = "×$quantity",
+        color = Color.White,
+        style = MaterialTheme.typography.labelMedium,
+        fontWeight = FontWeight.Bold,
+        modifier = modifier
+            .padding(6.dp)
+            .clip(CircleShape)
+            .background(Color.Black.copy(alpha = 0.55f))
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    )
 }

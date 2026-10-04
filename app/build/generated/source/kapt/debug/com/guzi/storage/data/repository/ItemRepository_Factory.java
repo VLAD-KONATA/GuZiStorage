@@ -1,6 +1,7 @@
 package com.guzi.storage.data.repository;
 
 import com.guzi.storage.data.local.dao.ItemDao;
+import com.guzi.storage.util.ImageFileManager;
 import dagger.internal.DaggerGenerated;
 import dagger.internal.Factory;
 import dagger.internal.QualifierMetadata;
@@ -26,20 +27,25 @@ import javax.inject.Provider;
 public final class ItemRepository_Factory implements Factory<ItemRepository> {
   private final Provider<ItemDao> itemDaoProvider;
 
-  public ItemRepository_Factory(Provider<ItemDao> itemDaoProvider) {
+  private final Provider<ImageFileManager> imageFileManagerProvider;
+
+  public ItemRepository_Factory(Provider<ItemDao> itemDaoProvider,
+      Provider<ImageFileManager> imageFileManagerProvider) {
     this.itemDaoProvider = itemDaoProvider;
+    this.imageFileManagerProvider = imageFileManagerProvider;
   }
 
   @Override
   public ItemRepository get() {
-    return newInstance(itemDaoProvider.get());
+    return newInstance(itemDaoProvider.get(), imageFileManagerProvider.get());
   }
 
-  public static ItemRepository_Factory create(Provider<ItemDao> itemDaoProvider) {
-    return new ItemRepository_Factory(itemDaoProvider);
+  public static ItemRepository_Factory create(Provider<ItemDao> itemDaoProvider,
+      Provider<ImageFileManager> imageFileManagerProvider) {
+    return new ItemRepository_Factory(itemDaoProvider, imageFileManagerProvider);
   }
 
-  public static ItemRepository newInstance(ItemDao itemDao) {
-    return new ItemRepository(itemDao);
+  public static ItemRepository newInstance(ItemDao itemDao, ImageFileManager imageFileManager) {
+    return new ItemRepository(itemDao, imageFileManager);
   }
 }

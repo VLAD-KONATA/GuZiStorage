@@ -30,6 +30,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -176,6 +177,53 @@ fun AddItemScreen(
                 supportingText = formState.validationErrors["nameCn"]?.let { { Text(it) } }
             )
 
+            MultiSelectField(
+                label = "IP名",
+                selectedValues = formState.ipNames,
+                options = ipOptions,
+                onValuesChange = viewModel::updateIpNames,
+                required = true,
+                isError = "ipName" in formState.validationErrors,
+                errorMessage = formState.validationErrors["ipName"]
+            )
+
+            MultiSelectField(
+                label = "相关角色",
+                selectedValues = formState.characters,
+                options = characterOptions,
+                onValuesChange = viewModel::updateCharacters,
+                required = true,
+                isError = "characters" in formState.validationErrors,
+                errorMessage = formState.validationErrors["characters"]
+            )
+
+            MultiSelectField(
+                label = "柄图种类",
+                selectedValues = formState.artTypes,
+                options = artTypeOptions,
+                onValuesChange = viewModel::updateArtTypes,
+                required = true,
+                isError = "artTypes" in formState.validationErrors,
+                errorMessage = formState.validationErrors["artTypes"]
+            )
+
+            MultiSelectField(
+                label = "种类",
+                selectedValues = formState.categories,
+                options = categoryOptions,
+                onValuesChange = viewModel::updateCategories
+            )
+
+            MultiSelectField(
+                label = "尺寸",
+                selectedValues = formState.sizes,
+                options = sizeOptions,
+                onValuesChange = viewModel::updateSizes
+            )
+
+            // ===== 详细信息 =====
+            SectionTitle("详细信息")
+
             OutlinedTextField(
                 value = formState.nameEn,
                 onValueChange = viewModel::updateNameEn,
@@ -184,21 +232,11 @@ fun AddItemScreen(
                 singleLine = true
             )
 
-            PresetDropdown(
-                label = "IP名",
-                value = formState.ipName,
-                options = ipOptions,
-                onValueChange = viewModel::updateIpName,
-                required = true,
-                isError = "ipName" in formState.validationErrors,
-                errorMessage = formState.validationErrors["ipName"]
-            )
-
-            PresetDropdown(
+            MultiSelectField(
                 label = "出品商",
-                value = formState.producer,
+                selectedValues = formState.producers,
                 options = producerOptions,
-                onValueChange = viewModel::updateProducer
+                onValuesChange = viewModel::updateProducers
             )
 
             MultiSelectField(
@@ -213,7 +251,6 @@ fun AddItemScreen(
                 selectedValues = formState.saleFormat,
                 options = saleFormatOptions,
                 onValuesChange = viewModel::updateSaleFormat,
-                required = true,
                 isError = "saleFormat" in formState.validationErrors,
                 errorMessage = formState.validationErrors["saleFormat"]
             )
@@ -223,13 +260,20 @@ fun AddItemScreen(
                 value = formState.sellMethod,
                 options = sellMethodOptions,
                 onValueChange = viewModel::updateSellMethod,
-                required = true,
                 isError = "sellMethod" in formState.validationErrors,
                 errorMessage = formState.validationErrors["sellMethod"]
             )
 
-            // ===== 详细信息 =====
-            SectionTitle("详细信息")
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = formState.isNoPrice,
+                    onCheckedChange = viewModel::updateIsNoPrice
+                )
+                Text("该商品无价格")
+            }
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -240,6 +284,7 @@ fun AddItemScreen(
                     value = formState.price,
                     onValueChange = viewModel::updatePrice,
                     label = { Text("价格") },
+                    enabled = !formState.isNoPrice,
                     modifier = Modifier.width(120.dp),
                     singleLine = true,
                     isError = "price" in formState.validationErrors,
@@ -251,14 +296,17 @@ fun AddItemScreen(
                     .find { it.first == formState.currency }?.second ?: ""
                 ExposedDropdownMenuBox(
                     expanded = currencyExpanded,
-                    onExpandedChange = { currencyExpanded = it }
+                    onExpandedChange = { if (!formState.isNoPrice) currencyExpanded = it }
                 ) {
                     OutlinedTextField(
                         value = currencyLabel,
                         onValueChange = {},
                         readOnly = true,
+                        enabled = !formState.isNoPrice,
                         label = { Text("货币") },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded) },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = currencyExpanded)
+                        },
                         modifier = Modifier
                             .weight(1f)
                             .menuAnchor()
@@ -289,49 +337,12 @@ fun AddItemScreen(
                 singleLine = true
             )
 
-            PresetDropdown(
-                label = "种类",
-                value = formState.category,
-                options = categoryOptions,
-                onValueChange = viewModel::updateCategory
-            )
-
-            MultiSelectField(
-                label = "尺寸",
-                selectedValues = formState.sizes,
-                options = sizeOptions,
-                onValuesChange = viewModel::updateSizes
-            )
-
             MultiSelectField(
                 label = "材质",
                 selectedValues = formState.materials,
                 options = materialOptions,
                 onValuesChange = viewModel::updateMaterials
             )
-
-            MultiSelectField(
-                label = "相关角色",
-                selectedValues = formState.characters,
-                options = characterOptions,
-                onValuesChange = viewModel::updateCharacters,
-                required = true,
-                isError = "characters" in formState.validationErrors,
-                errorMessage = formState.validationErrors["characters"]
-            )
-
-            MultiSelectField(
-                label = "柄图种类",
-                selectedValues = formState.artTypes,
-                options = artTypeOptions,
-                onValuesChange = viewModel::updateArtTypes,
-                required = true,
-                isError = "artTypes" in formState.validationErrors,
-                errorMessage = formState.validationErrors["artTypes"]
-            )
-
-            // ===== 状态与数量 =====
-            SectionTitle("状态与数量")
 
             StatusDropdown(
                 value = formState.status,
@@ -361,6 +372,44 @@ fun AddItemScreen(
                 singleLine = true,
                 isError = "quantity" in formState.validationErrors,
                 supportingText = formState.validationErrors["quantity"]?.let { { Text(it) } }
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Checkbox(
+                    checked = formState.isOriginalBagUnknown,
+                    onCheckedChange = viewModel::updateIsOriginalBagUnknown
+                )
+                Text("该商品无明确原袋")
+            }
+
+            OutlinedTextField(
+                value = formState.originalBagQuantity,
+                onValueChange = viewModel::updateOriginalBagQuantity,
+                label = { Text("原袋") },
+                enabled = !formState.isOriginalBagUnknown,
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
+            )
+
+            OutlinedTextField(
+                value = formState.note,
+                onValueChange = viewModel::updateNote,
+                label = { Text("备注") },
+                modifier = Modifier.fillMaxWidth(),
+                minLines = 3,
+                maxLines = 5
+            )
+
+            MultiSelectField(
+                label = "参考链接",
+                selectedValues = formState.referenceLinks,
+                options = emptyList(),
+                onValuesChange = viewModel::updateReferenceLinks,
+                isError = "referenceLinks" in formState.validationErrors,
+                errorMessage = formState.validationErrors["referenceLinks"]
             )
 
             // ===== 图片 =====
@@ -401,18 +450,6 @@ fun AddItemScreen(
                     onMove = viewModel::moveImage
                 )
             }
-
-            // ===== 备注 =====
-            SectionTitle("备注")
-
-            OutlinedTextField(
-                value = formState.note,
-                onValueChange = viewModel::updateNote,
-                label = { Text("备注") },
-                modifier = Modifier.fillMaxWidth(),
-                minLines = 3,
-                maxLines = 5
-            )
 
             // 底部留白
             androidx.compose.foundation.layout.Spacer(modifier = Modifier.padding(bottom = 80.dp))

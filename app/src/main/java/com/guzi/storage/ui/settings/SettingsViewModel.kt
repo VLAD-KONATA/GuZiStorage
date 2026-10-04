@@ -31,8 +31,20 @@ class SettingsViewModel @Inject constructor(
                 initialValue = userPreferencesRepository.isAutoSavePresetsEnabled()
             )
 
+    val imageSaveDirectory: StateFlow<String> =
+        userPreferencesRepository.imageSaveDirectory
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = userPreferencesRepository.getImageSaveDirectory()
+            )
+
     fun setAutoSavePresetsEnabled(enabled: Boolean) {
         userPreferencesRepository.setAutoSavePresetsEnabled(enabled)
+    }
+
+    fun setImageSaveDirectory(path: String) {
+        userPreferencesRepository.setImageSaveDirectory(path)
     }
 
     // ===== 数据导出 =====

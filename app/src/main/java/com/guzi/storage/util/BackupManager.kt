@@ -84,7 +84,7 @@ class BackupManager @Inject constructor(
 
     private fun buildItemsCsv(items: List<Item>): String {
         val sb = StringBuilder()
-        sb.appendLine("id,中文名称,日文/英文名称,IP名,出品商,出品地,发售形式,售卖方式,价格,发售日期,种类,尺寸,材质,相关角色,柄图种类,状态,版本,数量,备注")
+        sb.appendLine("id,中文名称,日文/英文名称,IP名,出品商,出品地,发售形式,售卖方式,价格,发售日期,种类,尺寸,材质,相关角色,柄图种类,状态,版本,数量,原袋,参考链接,备注")
 
         for (item in items) {
             // 状态列单列模式：无伤→留空，有伤→damageDetails 用 | 拼接
@@ -94,14 +94,14 @@ class BackupManager @Inject constructor(
                 item.id,
                 item.nameCn,
                 item.nameEn ?: "",
-                item.ipName,
-                item.producer ?: "",
+                item.ipNames.joinToString("|"),
+                item.producers.joinToString("|"),
                 item.originPlaces.joinToString("|"),
                 item.saleFormat.joinToString("|"),
-                item.sellMethod,
+                item.sellMethod ?: "",
                 item.price ?: "",
                 DateUtils.formatYearMonthForCsv(item.releaseDate),
-                item.category ?: "",
+                item.categories.joinToString("|"),
                 item.sizes.joinToString("|"),
                 item.materials.joinToString("|"),
                 item.characters.joinToString("|"),
@@ -109,6 +109,8 @@ class BackupManager @Inject constructor(
                 statusCsv,
                 item.version ?: "",
                 item.quantity.toString(),
+                item.originalBagQuantity?.toString() ?: "",
+                item.referenceLinks.joinToString("|"),
                 item.note ?: ""
             )
             sb.appendLine(cols.joinToString(",") { escapeCsv(it) })

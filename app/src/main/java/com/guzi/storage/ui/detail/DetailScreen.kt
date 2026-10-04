@@ -51,14 +51,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.FirstBaseline
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.AsyncImage
 import com.guzi.storage.domain.model.Item
-import com.guzi.storage.ui.components.AdaptiveImage
 import com.guzi.storage.ui.components.ConfirmDialog
 import com.guzi.storage.util.CurrencyUtils
+import java.io.File
 
 /**
  * 物品详情页
@@ -156,6 +163,7 @@ private fun DetailContent(
     onImageClick: (Int) -> Unit = {}
 ) {
     val clipboardManager = LocalClipboardManager.current
+    val uriHandler = LocalUriHandler.current
     var detailExpanded by remember { mutableStateOf(false) }
 
     Column(
@@ -198,7 +206,13 @@ private fun DetailContent(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "ID：${item.id}",
+                        text = "ID：",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = item.id,
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -212,16 +226,12 @@ private fun DetailContent(
                             .clickable { clipboardManager.setText(AnnotatedString(item.id)) }
                     )
                 }
-                InfoRow(label = "IP", value = item.ipName)
-                if (item.characters.isNotEmpty()) {
-                    InfoRow(label = "角色", value = item.characters.joinToString("、"))
-                }
-                if (item.category != null) {
-                    InfoRow(label = "种类", value = item.category)
-                }
-                if (item.sizes.isNotEmpty()) {
-                    InfoRow(label = "尺寸", value = item.sizes.joinToString("、"))
-                }
+                InfoRow(label = "中文名称", value = detailText(item.nameCn))
+                InfoRow(label = "IP", value = detailList(item.ipNames))
+                InfoRow(label = "角色", value = detailList(item.characters))
+                InfoRow(label = "柄图种类", value = detailList(item.artTypes))
+                InfoRow(label = "种类", value = detailList(item.categories))
+                InfoRow(label = "尺寸", value = detailList(item.sizes))
             }
         }
 
@@ -252,18 +262,34 @@ private fun DetailContent(
 
             if (detailExpanded) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    if (item.nameEn != null) InfoRow(label = "日文/英文名", value = item.nameEn)
-                    if (item.producer != null) InfoRow(label = "出品商", value = item.producer)
-                    if (item.originPlaces.isNotEmpty()) InfoRow(label = "出品地", value = item.originPlaces.joinToString("、"))
-                    if (item.saleFormat.isNotEmpty()) InfoRow(label = "发售形式", value = item.saleFormat.joinToString("、"))
-                    InfoRow(label = "售卖方式", value = item.sellMethod)
-                    if (item.price != null) InfoRow(label = "价格", value = CurrencyUtils.formatPrice(item.price))
-                    if (item.releaseDate != null) InfoRow(label = "发售日期", value = item.releaseDate)
-                    if (item.materials.isNotEmpty()) InfoRow(label = "材质", value = item.materials.joinToString("、"))
-                    if (item.artTypes.isNotEmpty()) InfoRow(label = "柄图种类", value = item.artTypes.joinToString("、"))
-                    InfoRow(label = "状态", value = if (item.status == "无伤") "无伤" else "${item.status}（${item.damageDetails.joinToString("，")}）")
-                    if (item.version != null) InfoRow(label = "版本", value = item.version)
+                    InfoRow(label = "日文/英文名", value = detailText(item.nameEn))
+                    InfoRow(label = "出品商", value = detailList(item.producers))
+                    InfoRow(label = "出品地", value = detailList(item.originPlaces))
+                    InfoRow(label = "发售形式", value = detailList(item.saleFormat))
+                    InfoRow(label = "售卖方式", value = detailText(item.sellMethod))
+                    if (item.price != "0") {
+                        InfoRow(
+                            label = "价格",
+                            value = CurrencyUtils.formatPrice(item.price).ifBlank { "未知" }
+                        )
+                    }
+                    InfoRow(label = "发售日期", value = detailText(item.releaseDate))
+                    InfoRow(label = "材质", value = detailList(item.materials))
+                    InfoRow(label = "状态", value = detailStatus(item))
+                    InfoRow(label = "版本", value = detailText(item.version))
                     InfoRow(label = "数量", value = "${item.quantity} 件")
+                    item.originalBagQuantity?.let { quantity ->
+                        InfoRow(label = "原袋", value = "$quantity 个")
+                    }
+                    if (item.referenceLinks.isNotEmpty()) {
+                        item.referenceLinks.forEachIndexed { index, link ->
+                            LinkInfoRow(
+                                label = if (index == 0) "参考链接" else "",
+                                value = link,
+                                onClick = { runCatching { uriHandler.openUri(link) } }
+                            )
+                        }
+                    }
                     if (item.note != null) InfoRow(label = "备注", value = item.note)
                 }
                 Spacer(Modifier.height(8.dp))
@@ -319,6 +345,8 @@ private fun ImagePager(
     imagePaths: List<String>,
     onImageClick: (Int) -> Unit = {}
 ) {
+    val context = LocalContext.current
+
     if (imagePaths.isEmpty()) {
         Box(
             modifier = modifier.background(MaterialTheme.colorScheme.surfaceVariant),
@@ -338,10 +366,13 @@ private fun ImagePager(
                 state = pagerState,
                 modifier = Modifier.fillMaxSize()
             ) { page ->
-                AdaptiveImage(
-                    imagePath = imagePaths[page],
+                AsyncImage(
+                    model = File(context.filesDir, imagePaths[page]),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
                         .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
                         .clickable { onImageClick(page) }
                 )
             }
@@ -377,19 +408,64 @@ private fun ImagePager(
  */
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Row(verticalAlignment = Alignment.Top) {
-        Text(
-            text = "$label：",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            modifier = Modifier.width(80.dp)
-        )
-        SelectionContainer {
+    val textStyle = MaterialTheme.typography.bodySmall.copy(lineHeight = 18.sp)
+    SelectionContainer {
+        Row {
+            Text(
+                text = "$label：",
+                style = textStyle,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                modifier = Modifier
+                    .width(80.dp)
+                    .alignBy(FirstBaseline)
+            )
             Text(
                 text = value,
-                style = MaterialTheme.typography.bodySmall
+                style = textStyle,
+                modifier = Modifier.alignBy(FirstBaseline)
             )
         }
     }
+}
+
+@Composable
+private fun LinkInfoRow(label: String, value: String, onClick: () -> Unit) {
+    val textStyle = MaterialTheme.typography.bodySmall.copy(lineHeight = 18.sp)
+    Row {
+        Text(
+            text = if (label.isNotBlank()) "$label：" else "",
+            style = textStyle,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            modifier = Modifier
+                .width(80.dp)
+                .alignBy(FirstBaseline)
+        )
+        Text(
+            text = value,
+            style = textStyle,
+            color = MaterialTheme.colorScheme.primary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .alignBy(FirstBaseline)
+                .weight(1f)
+                .clickable(onClick = onClick)
+        )
+    }
+}
+
+private fun detailText(value: String?): String =
+    value?.takeIf { it.isNotBlank() } ?: "未知"
+
+private fun detailList(values: List<String>): String =
+    values.filter { it.isNotBlank() }.takeIf { it.isNotEmpty() }?.joinToString("、") ?: "未知"
+
+private fun detailStatus(item: Item): String {
+    if (item.status == "无伤") return "无伤"
+    val details = item.damageDetails.filter { it.isNotBlank() }
+    return if (details.isEmpty()) item.status else "${item.status}（${details.joinToString("，")}）"
 }

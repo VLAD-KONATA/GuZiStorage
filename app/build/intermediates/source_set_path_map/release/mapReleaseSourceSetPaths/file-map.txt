@@ -1,10 +1,10 @@
-com.guzi.storage.app-pngs-0 D:\Git\GuZiStorage\GuZiStorage\app\build\generated\res\pngs\release
-com.guzi.storage.app-resValues-1 D:\Git\GuZiStorage\GuZiStorage\app\build\generated\res\resValues\release
-com.guzi.storage.app-packageReleaseResources-2 D:\Git\GuZiStorage\GuZiStorage\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
-com.guzi.storage.app-packageReleaseResources-3 D:\Git\GuZiStorage\GuZiStorage\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
-com.guzi.storage.app-release-4 D:\Git\GuZiStorage\GuZiStorage\app\build\intermediates\merged_res\release\mergeReleaseResources
-com.guzi.storage.app-main-5 D:\Git\GuZiStorage\GuZiStorage\app\src\main\res
-com.guzi.storage.app-release-6 D:\Git\GuZiStorage\GuZiStorage\app\src\release\res
+com.guzi.storage.app-pngs-0 D:\Git\GuZiStorage\app\build\generated\res\pngs\release
+com.guzi.storage.app-resValues-1 D:\Git\GuZiStorage\app\build\generated\res\resValues\release
+com.guzi.storage.app-packageReleaseResources-2 D:\Git\GuZiStorage\app\build\intermediates\incremental\release\packageReleaseResources\merged.dir
+com.guzi.storage.app-packageReleaseResources-3 D:\Git\GuZiStorage\app\build\intermediates\incremental\release\packageReleaseResources\stripped.dir
+com.guzi.storage.app-release-4 D:\Git\GuZiStorage\app\build\intermediates\merged_res\release\mergeReleaseResources
+com.guzi.storage.app-main-5 D:\Git\GuZiStorage\app\src\main\res
+com.guzi.storage.app-release-6 D:\Git\GuZiStorage\app\src\release\res
 com.guzi.storage.app-lifecycle-runtime-release-7 D:\Users\VLADKONATA\.gradle\caches\transforms-4\088ff4b540ddbba80cd31370be640f7e\transformed\lifecycle-runtime-release\res
 com.guzi.storage.app-profileinstaller-1.3.1-8 D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\res
 com.guzi.storage.app-ui-release-9 D:\Users\VLADKONATA\.gradle\caches\transforms-4\108a52580ffb9483ebd23ec60f19b5d4\transformed\ui-release\res

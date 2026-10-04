@@ -11,7 +11,7 @@ import javax.inject.Singleton;
  * 用户偏好设置仓库 - 基于 SharedPreferences
  */
 @javax.inject.Singleton()
-@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000>\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0005\n\u0002\u0018\u0002\n\u0002\b\u0004\n\u0002\u0010\u0002\n\u0002\b\u0005\b\u0007\u0018\u0000 \u001b2\u00020\u0001:\u0001\u001bB\u0011\b\u0007\u0012\b\b\u0001\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J\f\u0010\u0010\u001a\b\u0012\u0004\u0012\u00020\n0\tJ\u0006\u0010\u0014\u001a\u00020\u0007J\u000e\u0010\u0015\u001a\b\u0012\u0004\u0012\u00020\n0\tH\u0002J\u000e\u0010\u0016\u001a\u00020\u00172\u0006\u0010\u0018\u001a\u00020\u0007J\u0014\u0010\u0019\u001a\u00020\u00172\f\u0010\u001a\u001a\b\u0012\u0004\u0012\u00020\n0\tR\u0014\u0010\u0005\u001a\b\u0012\u0004\u0012\u00020\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\b\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\t0\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\u000b\u001a\b\u0012\u0004\u0012\u00020\u00070\f\u00a2\u0006\b\n\u0000\u001a\u0004\b\r\u0010\u000eR\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010\u000f\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\t0\f\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0010\u0010\u000eR\u0016\u0010\u0011\u001a\n \u0013*\u0004\u0018\u00010\u00120\u0012X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006\u001c"}, d2 = {"Lcom/guzi/storage/data/repository/UserPreferencesRepository;", "", "context", "Landroid/content/Context;", "(Landroid/content/Context;)V", "_autoSavePresetsEnabled", "Lkotlinx/coroutines/flow/MutableStateFlow;", "", "_groupingConfig", "", "", "autoSavePresetsEnabled", "Lkotlinx/coroutines/flow/Flow;", "getAutoSavePresetsEnabled", "()Lkotlinx/coroutines/flow/Flow;", "groupingConfig", "getGroupingConfig", "prefs", "Landroid/content/SharedPreferences;", "kotlin.jvm.PlatformType", "isAutoSavePresetsEnabled", "loadGroupingConfig", "setAutoSavePresetsEnabled", "", "enabled", "setGroupingConfig", "levels", "Companion", "app_debug"})
+@kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000@\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0000\n\u0002\u0018\u0002\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\u0010\u000b\n\u0000\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0002\b\u0002\n\u0002\u0018\u0002\n\u0002\b\u0007\n\u0002\u0018\u0002\n\u0002\b\u0006\n\u0002\u0010\u0002\n\u0002\b\u0006\b\u0007\u0018\u0000 !2\u00020\u0001:\u0001!B\u0011\b\u0007\u0012\b\b\u0001\u0010\u0002\u001a\u00020\u0003\u00a2\u0006\u0002\u0010\u0004J\f\u0010\u0011\u001a\b\u0012\u0004\u0012\u00020\n0\tJ\u0006\u0010\u0013\u001a\u00020\nJ\u0006\u0010\u0017\u001a\u00020\u0007J\u000e\u0010\u0018\u001a\b\u0012\u0004\u0012\u00020\n0\tH\u0002J\u001c\u0010\u0019\u001a\b\u0012\u0004\u0012\u00020\n0\t2\f\u0010\u001a\u001a\b\u0012\u0004\u0012\u00020\n0\tH\u0002J\u000e\u0010\u001b\u001a\u00020\u001c2\u0006\u0010\u001d\u001a\u00020\u0007J\u0014\u0010\u001e\u001a\u00020\u001c2\f\u0010\u001a\u001a\b\u0012\u0004\u0012\u00020\n0\tJ\u000e\u0010\u001f\u001a\u00020\u001c2\u0006\u0010 \u001a\u00020\nR\u0014\u0010\u0005\u001a\b\u0012\u0004\u0012\u00020\u00070\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001a\u0010\b\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\t0\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0014\u0010\u000b\u001a\b\u0012\u0004\u0012\u00020\n0\u0006X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u0017\u0010\f\u001a\b\u0012\u0004\u0012\u00020\u00070\r\u00a2\u0006\b\n\u0000\u001a\u0004\b\u000e\u0010\u000fR\u000e\u0010\u0002\u001a\u00020\u0003X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u001d\u0010\u0010\u001a\u000e\u0012\n\u0012\b\u0012\u0004\u0012\u00020\n0\t0\r\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0011\u0010\u000fR\u0017\u0010\u0012\u001a\b\u0012\u0004\u0012\u00020\n0\r\u00a2\u0006\b\n\u0000\u001a\u0004\b\u0013\u0010\u000fR\u0016\u0010\u0014\u001a\n \u0016*\u0004\u0018\u00010\u00150\u0015X\u0082\u0004\u00a2\u0006\u0002\n\u0000\u00a8\u0006\""}, d2 = {"Lcom/guzi/storage/data/repository/UserPreferencesRepository;", "", "context", "Landroid/content/Context;", "(Landroid/content/Context;)V", "_autoSavePresetsEnabled", "Lkotlinx/coroutines/flow/MutableStateFlow;", "", "_groupingConfig", "", "", "_imageSaveDirectory", "autoSavePresetsEnabled", "Lkotlinx/coroutines/flow/Flow;", "getAutoSavePresetsEnabled", "()Lkotlinx/coroutines/flow/Flow;", "groupingConfig", "getGroupingConfig", "imageSaveDirectory", "getImageSaveDirectory", "prefs", "Landroid/content/SharedPreferences;", "kotlin.jvm.PlatformType", "isAutoSavePresetsEnabled", "loadGroupingConfig", "normalizeGroupingConfig", "levels", "setAutoSavePresetsEnabled", "", "enabled", "setGroupingConfig", "setImageSaveDirectory", "path", "Companion", "app_debug"})
 public final class UserPreferencesRepository {
     @org.jetbrains.annotations.NotNull()
     private final android.content.Context context = null;
@@ -21,15 +21,23 @@ public final class UserPreferencesRepository {
     @org.jetbrains.annotations.NotNull()
     private final kotlinx.coroutines.flow.Flow<java.lang.Boolean> autoSavePresetsEnabled = null;
     @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.MutableStateFlow<java.lang.String> _imageSaveDirectory = null;
+    @org.jetbrains.annotations.NotNull()
+    private final kotlinx.coroutines.flow.Flow<java.lang.String> imageSaveDirectory = null;
+    @org.jetbrains.annotations.NotNull()
     private final kotlinx.coroutines.flow.MutableStateFlow<java.util.List<java.lang.String>> _groupingConfig = null;
     @org.jetbrains.annotations.NotNull()
     private final kotlinx.coroutines.flow.Flow<java.util.List<java.lang.String>> groupingConfig = null;
     @org.jetbrains.annotations.NotNull()
     private static final java.lang.String KEY_AUTO_SAVE_PRESETS = "auto_save_presets";
     @org.jetbrains.annotations.NotNull()
+    private static final java.lang.String KEY_IMAGE_SAVE_DIRECTORY = "image_save_directory";
+    @org.jetbrains.annotations.NotNull()
     private static final java.lang.String KEY_GROUPING_CONFIG = "grouping_config";
     @org.jetbrains.annotations.NotNull()
     private static final java.util.List<java.lang.String> DEFAULT_GROUPING = null;
+    @org.jetbrains.annotations.NotNull()
+    public static final java.lang.String DEFAULT_IMAGE_SAVE_DIRECTORY = "/storage/emulated/0/Pictures/GoodsPic";
     @org.jetbrains.annotations.NotNull()
     public static final com.guzi.storage.data.repository.UserPreferencesRepository.Companion Companion = null;
     
@@ -53,6 +61,20 @@ public final class UserPreferencesRepository {
     }
     
     @org.jetbrains.annotations.NotNull()
+    public final kotlinx.coroutines.flow.Flow<java.lang.String> getImageSaveDirectory() {
+        return null;
+    }
+    
+    @org.jetbrains.annotations.NotNull()
+    public final java.lang.String getImageSaveDirectory() {
+        return null;
+    }
+    
+    public final void setImageSaveDirectory(@org.jetbrains.annotations.NotNull()
+    java.lang.String path) {
+    }
+    
+    @org.jetbrains.annotations.NotNull()
     public final kotlinx.coroutines.flow.Flow<java.util.List<java.lang.String>> getGroupingConfig() {
         return null;
     }
@@ -70,7 +92,11 @@ public final class UserPreferencesRepository {
         return null;
     }
     
-    @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000\u0018\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0002\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0002\b\u0003\b\u0086\u0003\u0018\u00002\u00020\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002R\u0014\u0010\u0003\u001a\b\u0012\u0004\u0012\u00020\u00050\u0004X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0005X\u0082T\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0007\u001a\u00020\u0005X\u0082T\u00a2\u0006\u0002\n\u0000\u00a8\u0006\b"}, d2 = {"Lcom/guzi/storage/data/repository/UserPreferencesRepository$Companion;", "", "()V", "DEFAULT_GROUPING", "", "", "KEY_AUTO_SAVE_PRESETS", "KEY_GROUPING_CONFIG", "app_debug"})
+    private final java.util.List<java.lang.String> normalizeGroupingConfig(java.util.List<java.lang.String> levels) {
+        return null;
+    }
+    
+    @kotlin.Metadata(mv = {1, 9, 0}, k = 1, xi = 48, d1 = {"\u0000\u0018\n\u0002\u0018\u0002\n\u0002\u0010\u0000\n\u0002\b\u0002\n\u0002\u0010 \n\u0002\u0010\u000e\n\u0002\b\u0005\b\u0086\u0003\u0018\u00002\u00020\u0001B\u0007\b\u0002\u00a2\u0006\u0002\u0010\u0002R\u0014\u0010\u0003\u001a\b\u0012\u0004\u0012\u00020\u00050\u0004X\u0082\u0004\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0006\u001a\u00020\u0005X\u0086T\u00a2\u0006\u0002\n\u0000R\u000e\u0010\u0007\u001a\u00020\u0005X\u0082T\u00a2\u0006\u0002\n\u0000R\u000e\u0010\b\u001a\u00020\u0005X\u0082T\u00a2\u0006\u0002\n\u0000R\u000e\u0010\t\u001a\u00020\u0005X\u0082T\u00a2\u0006\u0002\n\u0000\u00a8\u0006\n"}, d2 = {"Lcom/guzi/storage/data/repository/UserPreferencesRepository$Companion;", "", "()V", "DEFAULT_GROUPING", "", "", "DEFAULT_IMAGE_SAVE_DIRECTORY", "KEY_AUTO_SAVE_PRESETS", "KEY_GROUPING_CONFIG", "KEY_IMAGE_SAVE_DIRECTORY", "app_debug"})
     public static final class Companion {
         
         private Companion() {

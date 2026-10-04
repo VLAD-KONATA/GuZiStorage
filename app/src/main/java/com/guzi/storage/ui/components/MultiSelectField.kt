@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.guzi.storage.util.ItemValueParser
 
 /**
  * 多选字段组件
@@ -95,8 +96,9 @@ fun MultiSelectField(
             singleLine = true,
             trailingIcon = {
                 IconButton(onClick = {
-                    if (inputText.isNotBlank() && inputText !in selectedValues) {
-                        onValuesChange(selectedValues + inputText)
+                    val value = inputText.trim()
+                    if (value.isNotBlank() && !ItemValueParser.hasPipe(value) && value !in selectedValues) {
+                        onValuesChange(selectedValues + value)
                         // 注：不在这里调用 onNewOption，新选项由 ViewModel 保存成功后统一处理
                         inputText = ""
                     }

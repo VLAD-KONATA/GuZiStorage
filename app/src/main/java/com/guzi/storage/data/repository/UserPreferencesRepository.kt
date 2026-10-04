@@ -32,6 +32,22 @@ class UserPreferencesRepository @Inject constructor(
         _autoSavePresetsEnabled.value = enabled
     }
 
+    // ===== 图片保存目录 =====
+
+    private val _imageSaveDirectory = MutableStateFlow(
+        prefs.getString(KEY_IMAGE_SAVE_DIRECTORY, DEFAULT_IMAGE_SAVE_DIRECTORY)
+            ?: DEFAULT_IMAGE_SAVE_DIRECTORY
+    )
+    val imageSaveDirectory: Flow<String> = _imageSaveDirectory.asStateFlow()
+
+    fun getImageSaveDirectory(): String = _imageSaveDirectory.value
+
+    fun setImageSaveDirectory(path: String) {
+        val normalized = path.trim().ifBlank { DEFAULT_IMAGE_SAVE_DIRECTORY }
+        prefs.edit().putString(KEY_IMAGE_SAVE_DIRECTORY, normalized).apply()
+        _imageSaveDirectory.value = normalized
+    }
+
     // ===== 分组配置 =====
 
     private val _groupingConfig: MutableStateFlow<List<String>> = MutableStateFlow(
@@ -42,25 +58,33 @@ class UserPreferencesRepository @Inject constructor(
     fun getGroupingConfig(): List<String> = _groupingConfig.value
 
     fun setGroupingConfig(levels: List<String>) {
-        val json = JSONArray(levels).toString()
+        val normalized = normalizeGroupingConfig(levels)
+        val json = JSONArray(normalized).toString()
         prefs.edit().putString(KEY_GROUPING_CONFIG, json).apply()
-        _groupingConfig.value = levels
+        _groupingConfig.value = normalized
     }
 
     private fun loadGroupingConfig(): List<String> {
         val json = prefs.getString(KEY_GROUPING_CONFIG, null) ?: return DEFAULT_GROUPING
         return try {
             val arr = JSONArray(json)
-            (0 until arr.length()).map { arr.getString(it) }
+            normalizeGroupingConfig((0 until arr.length()).map { arr.getString(it) })
         } catch (e: Exception) {
             DEFAULT_GROUPING
         }
     }
 
+    private fun normalizeGroupingConfig(levels: List<String>): List<String> {
+        val normalized = levels.filter { it != "version" }
+        return normalized.ifEmpty { DEFAULT_GROUPING }
+    }
+
     companion object {
         private const val KEY_AUTO_SAVE_PRESETS = "auto_save_presets"
+        private const val KEY_IMAGE_SAVE_DIRECTORY = "image_save_directory"
         private const val KEY_GROUPING_CONFIG = "grouping_config"
         private val DEFAULT_GROUPING = listOf("ip_name")
+        const val DEFAULT_IMAGE_SAVE_DIRECTORY = "/storage/emulated/0/Pictures/GoodsPic"
     }
 }
 

@@ -198,7 +198,7 @@ fun PresetManageScreen(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    items(options) { option ->
+                    items(options, key = { "$attributeName:$it" }) { option ->
                         val isSelected = option in selectedValues
                         OptionItem(
                             option = option,
