@@ -291,7 +291,7 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getAll() {
-    final String _sql = "SELECT * FROM items ORDER BY created_at DESC";
+    final String _sql = "SELECT * FROM items ORDER BY created_at ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 0);
     return CoroutinesRoom.createFlow(__db, false, new String[] {"items"}, new Callable<List<ItemEntity>>() {
       @Override
@@ -774,7 +774,7 @@ public final class ItemDao_Impl implements ItemDao {
             + "           OR ip_name LIKE ? || '|%'\n"
             + "           OR ip_name LIKE '%|' || ?\n"
             + "           OR ip_name LIKE '%|' || ? || '|%'\n"
-            + "        ORDER BY created_at DESC\n"
+            + "        ORDER BY created_at ASC\n"
             + "    ";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;
@@ -936,7 +936,7 @@ public final class ItemDao_Impl implements ItemDao {
             + "           OR category LIKE ? || '|%'\n"
             + "           OR category LIKE '%|' || ?\n"
             + "           OR category LIKE '%|' || ? || '|%'\n"
-            + "        ORDER BY created_at DESC\n"
+            + "        ORDER BY created_at ASC\n"
             + "    ";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;
@@ -1098,7 +1098,7 @@ public final class ItemDao_Impl implements ItemDao {
             + "           OR producer LIKE ? || '|%'\n"
             + "           OR producer LIKE '%|' || ?\n"
             + "           OR producer LIKE '%|' || ? || '|%'\n"
-            + "        ORDER BY created_at DESC\n"
+            + "        ORDER BY created_at ASC\n"
             + "    ";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;
@@ -1259,7 +1259,7 @@ public final class ItemDao_Impl implements ItemDao {
             + "        WHERE name_cn LIKE '%' || ? || '%' \n"
             + "           OR ip_name LIKE '%' || ? || '%' \n"
             + "           OR name_en LIKE '%' || ? || '%'\n"
-            + "        ORDER BY created_at DESC\n"
+            + "        ORDER BY created_at ASC\n"
             + "    ";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 3);
     int _argIndex = 1;
@@ -1413,7 +1413,7 @@ public final class ItemDao_Impl implements ItemDao {
 
   @Override
   public Flow<List<ItemEntity>> getItemsByCharacter(final String character) {
-    final String _sql = "SELECT * FROM items WHERE characters LIKE '%' || ? || '%' ORDER BY created_at DESC";
+    final String _sql = "SELECT * FROM items WHERE characters LIKE '%' || ? || '%' ORDER BY created_at ASC";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 1);
     int _argIndex = 1;
     _statement.bindString(_argIndex, character);
@@ -1568,7 +1568,7 @@ public final class ItemDao_Impl implements ItemDao {
             + "           OR category LIKE ? || '|%'\n"
             + "           OR category LIKE '%|' || ?\n"
             + "           OR category LIKE '%|' || ? || '|%'\n"
-            + "        ORDER BY created_at DESC\n"
+            + "        ORDER BY created_at ASC\n"
             + "    ";
     final RoomSQLiteQuery _statement = RoomSQLiteQuery.acquire(_sql, 4);
     int _argIndex = 1;

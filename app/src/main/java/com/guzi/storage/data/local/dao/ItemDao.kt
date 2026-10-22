@@ -17,7 +17,7 @@ interface ItemDao {
 
     // ===== 查询 =====
 
-    @Query("SELECT * FROM items ORDER BY created_at DESC")
+    @Query("SELECT * FROM items ORDER BY created_at ASC")
     fun getAll(): Flow<List<ItemEntity>>
 
     @Query("SELECT * FROM items WHERE id = :id")
@@ -43,7 +43,7 @@ interface ItemDao {
            OR ip_name LIKE :ipName || '|%'
            OR ip_name LIKE '%|' || :ipName
            OR ip_name LIKE '%|' || :ipName || '|%'
-        ORDER BY created_at DESC
+        ORDER BY created_at ASC
     """)
     fun getItemsByIp(ipName: String): Flow<List<ItemEntity>>
 
@@ -53,7 +53,7 @@ interface ItemDao {
            OR category LIKE :category || '|%'
            OR category LIKE '%|' || :category
            OR category LIKE '%|' || :category || '|%'
-        ORDER BY created_at DESC
+        ORDER BY created_at ASC
     """)
     fun getItemsByCategory(category: String): Flow<List<ItemEntity>>
 
@@ -63,7 +63,7 @@ interface ItemDao {
            OR producer LIKE :producer || '|%'
            OR producer LIKE '%|' || :producer
            OR producer LIKE '%|' || :producer || '|%'
-        ORDER BY created_at DESC
+        ORDER BY created_at ASC
     """)
     fun getItemsByProducer(producer: String): Flow<List<ItemEntity>>
 
@@ -75,14 +75,14 @@ interface ItemDao {
         WHERE name_cn LIKE '%' || :keyword || '%' 
            OR ip_name LIKE '%' || :keyword || '%' 
            OR name_en LIKE '%' || :keyword || '%'
-        ORDER BY created_at DESC
+        ORDER BY created_at ASC
     """)
     fun search(keyword: String): Flow<List<ItemEntity>>
 
     /**
      * 按角色筛选（管道符分隔的 characters 列模糊匹配）
      */
-    @Query("SELECT * FROM items WHERE characters LIKE '%' || :character || '%' ORDER BY created_at DESC")
+    @Query("SELECT * FROM items WHERE characters LIKE '%' || :character || '%' ORDER BY created_at ASC")
     fun getItemsByCharacter(character: String): Flow<List<ItemEntity>>
 
     /**
@@ -94,7 +94,7 @@ interface ItemDao {
            OR category LIKE :category || '|%'
            OR category LIKE '%|' || :category
            OR category LIKE '%|' || :category || '|%'
-        ORDER BY created_at DESC
+        ORDER BY created_at ASC
     """)
     fun getItemsByCategoryExact(category: String): Flow<List<ItemEntity>>
 

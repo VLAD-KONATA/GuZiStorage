@@ -426,17 +426,23 @@ public final class DaggerGuZiStorageApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_guzi_storage_ui_settings_SettingsViewModel = "com.guzi.storage.ui.settings.SettingsViewModel";
+      static String com_guzi_storage_ui_add_AddItemViewModel = "com.guzi.storage.ui.add.AddItemViewModel";
 
       static String com_guzi_storage_ui_detail_DetailViewModel = "com.guzi.storage.ui.detail.DetailViewModel";
 
-      static String com_guzi_storage_ui_add_AddItemViewModel = "com.guzi.storage.ui.add.AddItemViewModel";
+      static String com_guzi_storage_ui_zipimport_ZipImportViewModel = "com.guzi.storage.ui.zipimport.ZipImportViewModel";
 
       static String com_guzi_storage_ui_settings_PresetManageViewModel = "com.guzi.storage.ui.settings.PresetManageViewModel";
 
-      static String com_guzi_storage_ui_transaction_add_AddTransactionViewModel = "com.guzi.storage.ui.transaction.add.AddTransactionViewModel";
+      static String com_guzi_storage_ui_settings_GroupingSettingsViewModel = "com.guzi.storage.ui.settings.GroupingSettingsViewModel";
+
+      static String com_guzi_storage_ui_fileimport_StandaloneImportViewModel = "com.guzi.storage.ui.fileimport.StandaloneImportViewModel";
 
       static String com_guzi_storage_ui_group_GroupViewModel = "com.guzi.storage.ui.group.GroupViewModel";
+
+      static String com_guzi_storage_ui_settings_SettingsViewModel = "com.guzi.storage.ui.settings.SettingsViewModel";
+
+      static String com_guzi_storage_ui_transaction_add_AddTransactionViewModel = "com.guzi.storage.ui.transaction.add.AddTransactionViewModel";
 
       static String com_guzi_storage_ui_csvimport_CsvImportViewModel = "com.guzi.storage.ui.csvimport.CsvImportViewModel";
 
@@ -444,29 +450,32 @@ public final class DaggerGuZiStorageApp_HiltComponents_SingletonC {
 
       static String com_guzi_storage_ui_transaction_TransactionViewModel = "com.guzi.storage.ui.transaction.TransactionViewModel";
 
-      static String com_guzi_storage_ui_fileimport_StandaloneImportViewModel = "com.guzi.storage.ui.fileimport.StandaloneImportViewModel";
-
-      static String com_guzi_storage_ui_zipimport_ZipImportViewModel = "com.guzi.storage.ui.zipimport.ZipImportViewModel";
-
-      static String com_guzi_storage_ui_settings_GroupingSettingsViewModel = "com.guzi.storage.ui.settings.GroupingSettingsViewModel";
-
       @KeepFieldType
-      SettingsViewModel com_guzi_storage_ui_settings_SettingsViewModel2;
+      AddItemViewModel com_guzi_storage_ui_add_AddItemViewModel2;
 
       @KeepFieldType
       DetailViewModel com_guzi_storage_ui_detail_DetailViewModel2;
 
       @KeepFieldType
-      AddItemViewModel com_guzi_storage_ui_add_AddItemViewModel2;
+      ZipImportViewModel com_guzi_storage_ui_zipimport_ZipImportViewModel2;
 
       @KeepFieldType
       PresetManageViewModel com_guzi_storage_ui_settings_PresetManageViewModel2;
 
       @KeepFieldType
-      AddTransactionViewModel com_guzi_storage_ui_transaction_add_AddTransactionViewModel2;
+      GroupingSettingsViewModel com_guzi_storage_ui_settings_GroupingSettingsViewModel2;
+
+      @KeepFieldType
+      StandaloneImportViewModel com_guzi_storage_ui_fileimport_StandaloneImportViewModel2;
 
       @KeepFieldType
       GroupViewModel com_guzi_storage_ui_group_GroupViewModel2;
+
+      @KeepFieldType
+      SettingsViewModel com_guzi_storage_ui_settings_SettingsViewModel2;
+
+      @KeepFieldType
+      AddTransactionViewModel com_guzi_storage_ui_transaction_add_AddTransactionViewModel2;
 
       @KeepFieldType
       CsvImportViewModel com_guzi_storage_ui_csvimport_CsvImportViewModel2;
@@ -476,15 +485,6 @@ public final class DaggerGuZiStorageApp_HiltComponents_SingletonC {
 
       @KeepFieldType
       TransactionViewModel com_guzi_storage_ui_transaction_TransactionViewModel2;
-
-      @KeepFieldType
-      StandaloneImportViewModel com_guzi_storage_ui_fileimport_StandaloneImportViewModel2;
-
-      @KeepFieldType
-      ZipImportViewModel com_guzi_storage_ui_zipimport_ZipImportViewModel2;
-
-      @KeepFieldType
-      GroupingSettingsViewModel com_guzi_storage_ui_settings_GroupingSettingsViewModel2;
     }
   }
 
@@ -560,47 +560,44 @@ public final class DaggerGuZiStorageApp_HiltComponents_SingletonC {
 
     @IdentifierNameString
     private static final class LazyClassKeyProvider {
-      static String com_guzi_storage_ui_home_HomeViewModel = "com.guzi.storage.ui.home.HomeViewModel";
-
-      static String com_guzi_storage_ui_settings_PresetManageViewModel = "com.guzi.storage.ui.settings.PresetManageViewModel";
-
-      static String com_guzi_storage_ui_detail_DetailViewModel = "com.guzi.storage.ui.detail.DetailViewModel";
-
-      static String com_guzi_storage_ui_settings_SettingsViewModel = "com.guzi.storage.ui.settings.SettingsViewModel";
-
       static String com_guzi_storage_ui_settings_GroupingSettingsViewModel = "com.guzi.storage.ui.settings.GroupingSettingsViewModel";
 
-      static String com_guzi_storage_ui_transaction_add_AddTransactionViewModel = "com.guzi.storage.ui.transaction.add.AddTransactionViewModel";
+      static String com_guzi_storage_ui_fileimport_StandaloneImportViewModel = "com.guzi.storage.ui.fileimport.StandaloneImportViewModel";
+
+      static String com_guzi_storage_ui_transaction_TransactionViewModel = "com.guzi.storage.ui.transaction.TransactionViewModel";
+
+      static String com_guzi_storage_ui_group_GroupViewModel = "com.guzi.storage.ui.group.GroupViewModel";
+
+      static String com_guzi_storage_ui_add_AddItemViewModel = "com.guzi.storage.ui.add.AddItemViewModel";
 
       static String com_guzi_storage_ui_csvimport_CsvImportViewModel = "com.guzi.storage.ui.csvimport.CsvImportViewModel";
 
       static String com_guzi_storage_ui_zipimport_ZipImportViewModel = "com.guzi.storage.ui.zipimport.ZipImportViewModel";
 
-      static String com_guzi_storage_ui_add_AddItemViewModel = "com.guzi.storage.ui.add.AddItemViewModel";
+      static String com_guzi_storage_ui_transaction_add_AddTransactionViewModel = "com.guzi.storage.ui.transaction.add.AddTransactionViewModel";
 
-      static String com_guzi_storage_ui_fileimport_StandaloneImportViewModel = "com.guzi.storage.ui.fileimport.StandaloneImportViewModel";
+      static String com_guzi_storage_ui_detail_DetailViewModel = "com.guzi.storage.ui.detail.DetailViewModel";
 
-      static String com_guzi_storage_ui_group_GroupViewModel = "com.guzi.storage.ui.group.GroupViewModel";
+      static String com_guzi_storage_ui_settings_PresetManageViewModel = "com.guzi.storage.ui.settings.PresetManageViewModel";
 
-      static String com_guzi_storage_ui_transaction_TransactionViewModel = "com.guzi.storage.ui.transaction.TransactionViewModel";
+      static String com_guzi_storage_ui_home_HomeViewModel = "com.guzi.storage.ui.home.HomeViewModel";
 
-      @KeepFieldType
-      HomeViewModel com_guzi_storage_ui_home_HomeViewModel2;
-
-      @KeepFieldType
-      PresetManageViewModel com_guzi_storage_ui_settings_PresetManageViewModel2;
-
-      @KeepFieldType
-      DetailViewModel com_guzi_storage_ui_detail_DetailViewModel2;
-
-      @KeepFieldType
-      SettingsViewModel com_guzi_storage_ui_settings_SettingsViewModel2;
+      static String com_guzi_storage_ui_settings_SettingsViewModel = "com.guzi.storage.ui.settings.SettingsViewModel";
 
       @KeepFieldType
       GroupingSettingsViewModel com_guzi_storage_ui_settings_GroupingSettingsViewModel2;
 
       @KeepFieldType
-      AddTransactionViewModel com_guzi_storage_ui_transaction_add_AddTransactionViewModel2;
+      StandaloneImportViewModel com_guzi_storage_ui_fileimport_StandaloneImportViewModel2;
+
+      @KeepFieldType
+      TransactionViewModel com_guzi_storage_ui_transaction_TransactionViewModel2;
+
+      @KeepFieldType
+      GroupViewModel com_guzi_storage_ui_group_GroupViewModel2;
+
+      @KeepFieldType
+      AddItemViewModel com_guzi_storage_ui_add_AddItemViewModel2;
 
       @KeepFieldType
       CsvImportViewModel com_guzi_storage_ui_csvimport_CsvImportViewModel2;
@@ -609,16 +606,19 @@ public final class DaggerGuZiStorageApp_HiltComponents_SingletonC {
       ZipImportViewModel com_guzi_storage_ui_zipimport_ZipImportViewModel2;
 
       @KeepFieldType
-      AddItemViewModel com_guzi_storage_ui_add_AddItemViewModel2;
+      AddTransactionViewModel com_guzi_storage_ui_transaction_add_AddTransactionViewModel2;
 
       @KeepFieldType
-      StandaloneImportViewModel com_guzi_storage_ui_fileimport_StandaloneImportViewModel2;
+      DetailViewModel com_guzi_storage_ui_detail_DetailViewModel2;
 
       @KeepFieldType
-      GroupViewModel com_guzi_storage_ui_group_GroupViewModel2;
+      PresetManageViewModel com_guzi_storage_ui_settings_PresetManageViewModel2;
 
       @KeepFieldType
-      TransactionViewModel com_guzi_storage_ui_transaction_TransactionViewModel2;
+      HomeViewModel com_guzi_storage_ui_home_HomeViewModel2;
+
+      @KeepFieldType
+      SettingsViewModel com_guzi_storage_ui_settings_SettingsViewModel2;
     }
 
     private static final class SwitchingProvider<T> implements Provider<T> {

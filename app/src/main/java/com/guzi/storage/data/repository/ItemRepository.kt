@@ -61,13 +61,24 @@ class ItemRepository @Inject constructor(
     suspend fun addItems(items: List<Item>) {
         val now = System.currentTimeMillis()
         itemDao.insertAll(
-            items.map { it.copy(createdAt = now, updatedAt = now).toEntity() }
+            items.mapIndexed { index, item ->
+                val createdAt = now + index
+                item.copy(createdAt = createdAt, updatedAt = createdAt).toEntity()
+            }
         )
     }
 
     suspend fun updateItem(item: Item) {
+        val now = System.currentTimeMillis()
+        val existing = itemDao.getById(item.id)
+        val createdAt = item.createdAt.takeIf { it > 0 }
+            ?: existing?.createdAt
+            ?: now
         itemDao.update(
-            item.copy(updatedAt = System.currentTimeMillis()).toEntity()
+            item.copy(
+                createdAt = createdAt,
+                updatedAt = now
+            ).toEntity()
         )
     }
 

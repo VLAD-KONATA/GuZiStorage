@@ -51,132 +51,133 @@
 33-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:15:9-54
 34        android:supportsRtl="true"
 34-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:16:9-35
-35        android:theme="@style/Theme.GuZiStorage" >
-35-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:17:9-49
-36        <activity
-36-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:19:9-27:20
-37            android:name="com.guzi.storage.MainActivity"
-37-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:20:13-41
-38            android:exported="true"
-38-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:21:13-36
-39            android:theme="@style/Theme.GuZiStorage" >
-39-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:22:13-53
-40            <intent-filter>
-40-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:23:13-26:29
-41                <action android:name="android.intent.action.MAIN" />
-41-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:24:17-69
-41-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:24:25-66
-42
-43                <category android:name="android.intent.category.LAUNCHER" />
-43-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:25:17-77
-43-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:25:27-74
-44            </intent-filter>
-45        </activity>
-46
-47        <!-- FileProvider 用于分享备份 ZIP 文件 -->
-48        <provider
-49            android:name="androidx.core.content.FileProvider"
-49-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:31:13-62
-50            android:authorities="com.guzi.storage.fileprovider"
-50-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:32:13-64
-51            android:exported="false"
-51-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:33:13-37
-52            android:grantUriPermissions="true" >
-52-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:34:13-47
-53            <meta-data
-53-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:35:13-37:54
-54                android:name="android.support.FILE_PROVIDER_PATHS"
-54-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:36:17-67
-55                android:resource="@xml/file_paths" />
-55-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:37:17-51
-56        </provider>
-57        <provider
-57-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
-58            android:name="androidx.startup.InitializationProvider"
-58-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
-59            android:authorities="com.guzi.storage.androidx-startup"
-59-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
-60            android:exported="false" >
-60-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
-61            <meta-data
-61-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
-62                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-62-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
-63                android:value="androidx.startup" />
-63-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
-64            <meta-data
-64-->[androidx.lifecycle:lifecycle-process:2.8.7] D:\Users\VLADKONATA\.gradle\caches\transforms-4\8947e877f178e82535bfe9140c16ae23\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
-65                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-65-->[androidx.lifecycle:lifecycle-process:2.8.7] D:\Users\VLADKONATA\.gradle\caches\transforms-4\8947e877f178e82535bfe9140c16ae23\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
-66                android:value="androidx.startup" />
-66-->[androidx.lifecycle:lifecycle-process:2.8.7] D:\Users\VLADKONATA\.gradle\caches\transforms-4\8947e877f178e82535bfe9140c16ae23\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
-67            <meta-data
-67-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
-68                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
-68-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
-69                android:value="androidx.startup" />
-69-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
-70        </provider>
-71
-72        <activity
-72-->[androidx.compose.ui:ui-test-manifest:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\5726ca912e429937e9304e737be0eac0\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:23:9-25:39
-73            android:name="androidx.activity.ComponentActivity"
-73-->[androidx.compose.ui:ui-test-manifest:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\5726ca912e429937e9304e737be0eac0\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:24:13-63
-74            android:exported="true" />
-74-->[androidx.compose.ui:ui-test-manifest:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\5726ca912e429937e9304e737be0eac0\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:25:13-36
-75        <activity
-75-->[androidx.compose.ui:ui-tooling-android:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\182e25192c655b21c077b0de20b5ddf9\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
-76            android:name="androidx.compose.ui.tooling.PreviewActivity"
-76-->[androidx.compose.ui:ui-tooling-android:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\182e25192c655b21c077b0de20b5ddf9\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
-77            android:exported="true" />
-77-->[androidx.compose.ui:ui-tooling-android:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\182e25192c655b21c077b0de20b5ddf9\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
-78
-79        <service
-79-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
-80            android:name="androidx.room.MultiInstanceInvalidationService"
-80-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
-81            android:directBootAware="true"
-81-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
-82            android:exported="false" />
-82-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
-83
-84        <receiver
-84-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
-85            android:name="androidx.profileinstaller.ProfileInstallReceiver"
-85-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
-86            android:directBootAware="false"
-86-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
-87            android:enabled="true"
-87-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
-88            android:exported="true"
-88-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
-89            android:permission="android.permission.DUMP" >
-89-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
-90            <intent-filter>
-90-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
-91                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
-91-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
-91-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
-92            </intent-filter>
-93            <intent-filter>
-93-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
-94                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
-94-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
-94-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
-95            </intent-filter>
-96            <intent-filter>
-96-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
-97                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
-97-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
-97-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
-98            </intent-filter>
-99            <intent-filter>
-99-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
-100                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
-100-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
-100-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
-101            </intent-filter>
-102        </receiver>
-103    </application>
-104
-105</manifest>
+35        android:testOnly="true"
+36        android:theme="@style/Theme.GuZiStorage" >
+36-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:17:9-49
+37        <activity
+37-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:19:9-27:20
+38            android:name="com.guzi.storage.MainActivity"
+38-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:20:13-41
+39            android:exported="true"
+39-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:21:13-36
+40            android:theme="@style/Theme.GuZiStorage" >
+40-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:22:13-53
+41            <intent-filter>
+41-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:23:13-26:29
+42                <action android:name="android.intent.action.MAIN" />
+42-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:24:17-69
+42-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:24:25-66
+43
+44                <category android:name="android.intent.category.LAUNCHER" />
+44-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:25:17-77
+44-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:25:27-74
+45            </intent-filter>
+46        </activity>
+47
+48        <!-- FileProvider 用于分享备份 ZIP 文件 -->
+49        <provider
+50            android:name="androidx.core.content.FileProvider"
+50-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:31:13-62
+51            android:authorities="com.guzi.storage.fileprovider"
+51-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:32:13-64
+52            android:exported="false"
+52-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:33:13-37
+53            android:grantUriPermissions="true" >
+53-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:34:13-47
+54            <meta-data
+54-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:35:13-37:54
+55                android:name="android.support.FILE_PROVIDER_PATHS"
+55-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:36:17-67
+56                android:resource="@xml/file_paths" />
+56-->D:\Git\GuZiStorage\app\src\main\AndroidManifest.xml:37:17-51
+57        </provider>
+58        <provider
+58-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+59            android:name="androidx.startup.InitializationProvider"
+59-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:25:13-67
+60            android:authorities="com.guzi.storage.androidx-startup"
+60-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:26:13-68
+61            android:exported="false" >
+61-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:27:13-37
+62            <meta-data
+62-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+63                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+63-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:30:17-75
+64                android:value="androidx.startup" />
+64-->[androidx.emoji2:emoji2:1.3.0] D:\Users\VLADKONATA\.gradle\caches\transforms-4\fc067470c7e4046de340d42c1b14f5ef\transformed\emoji2-1.3.0\AndroidManifest.xml:31:17-49
+65            <meta-data
+65-->[androidx.lifecycle:lifecycle-process:2.8.7] D:\Users\VLADKONATA\.gradle\caches\transforms-4\8947e877f178e82535bfe9140c16ae23\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:29:13-31:52
+66                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+66-->[androidx.lifecycle:lifecycle-process:2.8.7] D:\Users\VLADKONATA\.gradle\caches\transforms-4\8947e877f178e82535bfe9140c16ae23\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:30:17-78
+67                android:value="androidx.startup" />
+67-->[androidx.lifecycle:lifecycle-process:2.8.7] D:\Users\VLADKONATA\.gradle\caches\transforms-4\8947e877f178e82535bfe9140c16ae23\transformed\lifecycle-process-2.8.7\AndroidManifest.xml:31:17-49
+68            <meta-data
+68-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+69                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+69-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+70                android:value="androidx.startup" />
+70-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+71        </provider>
+72
+73        <activity
+73-->[androidx.compose.ui:ui-test-manifest:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\5726ca912e429937e9304e737be0eac0\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:23:9-25:39
+74            android:name="androidx.activity.ComponentActivity"
+74-->[androidx.compose.ui:ui-test-manifest:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\5726ca912e429937e9304e737be0eac0\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:24:13-63
+75            android:exported="true" />
+75-->[androidx.compose.ui:ui-test-manifest:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\5726ca912e429937e9304e737be0eac0\transformed\ui-test-manifest-1.7.6\AndroidManifest.xml:25:13-36
+76        <activity
+76-->[androidx.compose.ui:ui-tooling-android:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\182e25192c655b21c077b0de20b5ddf9\transformed\ui-tooling-release\AndroidManifest.xml:23:9-25:39
+77            android:name="androidx.compose.ui.tooling.PreviewActivity"
+77-->[androidx.compose.ui:ui-tooling-android:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\182e25192c655b21c077b0de20b5ddf9\transformed\ui-tooling-release\AndroidManifest.xml:24:13-71
+78            android:exported="true" />
+78-->[androidx.compose.ui:ui-tooling-android:1.7.6] D:\Users\VLADKONATA\.gradle\caches\transforms-4\182e25192c655b21c077b0de20b5ddf9\transformed\ui-tooling-release\AndroidManifest.xml:25:13-36
+79
+80        <service
+80-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:24:9-28:63
+81            android:name="androidx.room.MultiInstanceInvalidationService"
+81-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:25:13-74
+82            android:directBootAware="true"
+82-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:26:13-43
+83            android:exported="false" />
+83-->[androidx.room:room-runtime:2.6.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\70386e7e3f00867399728cab13c5b3ef\transformed\room-runtime-2.6.1\AndroidManifest.xml:27:13-37
+84
+85        <receiver
+85-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+86            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+86-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+87            android:directBootAware="false"
+87-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+88            android:enabled="true"
+88-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+89            android:exported="true"
+89-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+90            android:permission="android.permission.DUMP" >
+90-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+91            <intent-filter>
+91-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+92                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+92-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+93            </intent-filter>
+94            <intent-filter>
+94-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+95                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+95-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+96            </intent-filter>
+97            <intent-filter>
+97-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+98                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+98-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+98-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+99            </intent-filter>
+100            <intent-filter>
+100-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+101                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+101-->[androidx.profileinstaller:profileinstaller:1.3.1] D:\Users\VLADKONATA\.gradle\caches\transforms-4\0b8ff4356f492d337a81717c6a964f1b\transformed\profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+102            </intent-filter>
+103        </receiver>
+104    </application>
+105
+106</manifest>
